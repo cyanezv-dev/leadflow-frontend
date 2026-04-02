@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LeadFlow CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --bg2: #161820;
+    --bg3: #1e2028;
+    --bg4: #252730;
+    --border: #2a2c38;
+    --border2: #333545;
+    --text: #e8eaf0;
+    --text2: #9499b0;
+    --text3: #5c6080;
+    --accent: #6c63ff;
+    --accent2: #8b83ff;
+    --accent-glow: rgba(108,99,255,0.15);
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,0.12);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59,130,246,0.12);
+    --purple: #a855f7;
+    --purple-bg: rgba(168,85,247,0.12);
+    --orange: #f97316;
+    --orange-bg: rgba(249,115,22,0.12);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,0.12);
+    --yellow: #eab308;
+    --yellow-bg: rgba(234,179,8,0.12);
+    --sidebar-w: 220px;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+    transition: width 0.25s ease;
+  }
+  .sidebar.collapsed { width: 64px; }
+
+  .sidebar-logo {
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    min-height: 64px;
+  }
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), #9b5de5);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+  .logo-text {
+    font-size: 17px; font-weight: 700;
+    background: linear-gradient(135deg, #fff, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .sidebar.collapsed .logo-text { display: none; }
+
+  .sidebar-nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 14px; font-weight: 500;
+    transition: all 0.15s;
+    white-space: nowrap; overflow: hidden;
+    border: none; background: none; text-align: left; width: 100%;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--accent-glow); color: var(--accent2); }
+  .nav-item .nav-icon { font-size: 18px; flex-shrink: 0; width: 22px; text-align: center; }
+  .sidebar.collapsed .nav-item span:not(.nav-icon) { display: none; }
+
+  .sidebar-footer {
+    padding: 12px 8px;
+    border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .collapse-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 13px;
+    transition: all 0.15s;
+    border: none; background: none; text-align: left; width: 100%;
+  }
+  .collapse-btn:hover { background: var(--bg3); color: var(--text2); }
+  .sidebar.collapsed .collapse-btn span:not(.nav-icon) { display: none; }
+
+  /* MAIN CONTENT */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    transition: margin-left 0.25s ease;
+  }
+  .main.expanded { margin-left: 64px; }
+
+  .page-header {
+    padding: 28px 32px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .page-title { font-size: 22px; font-weight: 700; color: var(--text); }
+  .page-subtitle { font-size: 13px; color: var(--text3); margin-top: 3px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+  .btn-primary:hover { background: var(--accent2); box-shadow: 0 0 24px rgba(108,99,255,0.3); }
+  .btn-ghost {
+    background: var(--bg3);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--bg4); color: var(--text); }
+  .btn-danger {
+    background: var(--red-bg);
+    color: var(--red);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-whatsapp { background: rgba(37,211,102,0.15); color: #25d366; }
+  .badge-facebook { background: rgba(24,119,242,0.15); color: #1877f2; }
+  .badge-instagram { background: rgba(225,48,108,0.15); color: #e1306c; }
+  .badge-telefono, .badge-teléfono { background: var(--yellow-bg); color: var(--yellow); }
+  .badge-chat { background: var(--blue-bg); color: var(--blue); }
+  .badge-web { background: var(--green-bg); color: var(--green); }
+  .badge-nuevo { background: var(--blue-bg); color: var(--blue); }
+  .badge-contactado { background: rgba(96,165,250,0.15); color: #60a5fa; }
+  .badge-calificado { background: var(--purple-bg); color: var(--purple); }
+  .badge-propuesta { background: var(--orange-bg); color: var(--orange); }
+  .badge-negociación { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .badge-ganado { background: var(--green-bg); color: var(--green); }
+  .badge-perdido { background: var(--red-bg); color: var(--red); }
+  .badge-alta { background: var(--red-bg); color: var(--red); }
+  .badge-media { background: var(--yellow-bg); color: var(--yellow); }
+  .badge-baja { background: var(--green-bg); color: var(--green); }
+
+  /* INPUTS */
+  .input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .input:focus { border-color: var(--accent); }
+  .input::placeholder { color: var(--text3); }
+  select.input { cursor: pointer; }
+  textarea.input { resize: vertical; min-height: 80px; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── DASHBOARD ─── */
+  .dashboard-page { padding: 28px 32px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .stat-value { font-size: 26px; font-weight: 700; color: var(--text); }
+  .stat-label { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
+
+  .lead-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .lead-row:last-child { border-bottom: none; }
+  .lead-row:hover { background: var(--bg3); border-radius: var(--radius-sm); padding-left: 8px; }
+  .lead-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), #9b5de5);
+    color: #fff;
+  }
+  .lead-info { flex: 1; min-width: 0; }
+  .lead-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .lead-company { font-size: 11px; color: var(--text3); }
+  .lead-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  .channel-chart {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 8px;
+  }
+  .channel-row { display: flex; align-items: center; gap: 10px; }
+  .channel-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .channel-name { font-size: 13px; color: var(--text2); flex: 1; }
+  .channel-count { font-size: 13px; font-weight: 600; color: var(--text); }
+  .channel-bar-wrap { flex: 1; background: var(--bg3); border-radius: 4px; height: 4px; }
+  .channel-bar { height: 4px; border-radius: 4px; }
+
+  /* Donut chart */
+  .donut-wrap { display: flex; align-items: center; justify-content: center; margin: 16px 0; }
+
+  /* ─── LEADS LIST ─── */
+  .leads-page { padding: 28px 32px; }
+  .leads-toolbar {
+    display: flex; gap: 10px; align-items: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .search-input-wrap { position: relative; flex: 1; min-width: 200px; }
+  .search-input-wrap .input { padding-left: 34px; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 15px; }
+
+  .leads-table { width: 100%; border-collapse: collapse; }
+  .leads-table th {
+    text-align: left;
+    font-size: 11px; font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .leads-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .leads-table tr:hover td { background: var(--bg3); }
+  .leads-table tr:last-child td { border-bottom: none; }
+  .leads-table td:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .leads-table td:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+  .priority-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .priority-alta { background: var(--red); }
+  .priority-media { background: var(--yellow); }
+  .priority-baja { background: var(--green); }
+
+  /* ─── PIPELINE ─── */
+  .pipeline-page { padding: 28px 32px; }
+  .pipeline-board {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    margin-top: 20px;
+  }
+  .pipeline-board::-webkit-scrollbar { height: 6px; }
+  .pipeline-board::-webkit-scrollbar-track { background: var(--bg); }
+  .pipeline-board::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  .pipeline-column {
+    min-width: 240px;
+    max-width: 240px;
+    flex-shrink: 0;
+  }
+  .col-header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .col-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .col-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; }
+  .col-count {
+    font-size: 11px; font-weight: 700;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1px 7px;
+    color: var(--text2);
+  }
+  .col-value { font-size: 11px; color: var(--text3); }
+
+  .pipeline-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .pipeline-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .pipeline-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .pipeline-card-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #9b5de5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .pipeline-card-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .pipeline-card-company { font-size: 11px; color: var(--text3); }
+  .pipeline-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+  .pipeline-value { font-size: 12px; font-weight: 700; color: var(--text2); font-family: 'DM Mono', monospace; }
+
+  /* ─── LEAD DETAIL ─── */
+  .detail-page { padding: 24px 32px; }
+  .detail-back {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text3); font-size: 13px;
+    cursor: pointer; margin-bottom: 24px;
+    border: none; background: none;
+    transition: color 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .detail-back:hover { color: var(--text); }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .lead-profile { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+  .profile-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #9b5de5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; color: #fff;
+    margin-bottom: 12px;
+  }
+  .profile-name { font-size: 18px; font-weight: 700; color: var(--text); }
+  .profile-company { font-size: 13px; color: var(--text3); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .profile-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0; }
+  .profile-contacts { display: flex; flex-direction: column; gap: 8px; padding: 14px 0; border-top: 1px solid var(--border); }
+  .contact-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+  .profile-value { margin: 14px 0; padding: 14px 0; border-top: 1px solid var(--border); }
+  .value-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .value-amount { font-size: 24px; font-weight: 700; color: var(--accent2); font-family: 'DM Mono', monospace; }
+  .profile-notes { padding: 14px 0; border-top: 1px solid var(--border); }
+  .notes-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .notes-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+  .detail-right { display: flex; flex-direction: column; gap: 16px; }
+  .detail-section { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .section-actions { display: flex; gap: 8px; }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px; color: var(--text3); gap: 8px;
+    font-size: 13px;
+  }
+  .empty-icon { font-size: 28px; opacity: 0.4; }
+
+  .activity-item {
+    display: flex; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+  .activity-content { flex: 1; }
+  .activity-type { font-size: 12px; font-weight: 600; color: var(--text2); display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .activity-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+  .activity-agent { font-size: 11px; color: var(--text3); margin-top: 3px; }
+  .activity-time { font-size: 11px; color: var(--text3); white-space: nowrap; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+
+  /* NOTE FORM */
+  .note-form { display: flex; gap: 8px; align-items: flex-end; }
+  .note-send-btn {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border: none; border-radius: var(--radius-sm);
+    color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 0 12px var(--accent-glow);
+    transition: all 0.15s;
+  }
+  .note-send-btn:hover { background: var(--accent2); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    width: 100%; max-width: 480px;
+    box-shadow: var(--shadow);
+    animation: modalIn 0.2s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+  .modal-form { display: flex; flex-direction: column; gap: 14px; }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+  /* STATUS SELECTS */
+  .status-select, .priority-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 12px;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  .status-select:focus, .priority-select:focus { border-color: var(--accent); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    z-index: 2000;
+    animation: toastIn 0.25s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* APPOINTMENT */
+  .appt-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .appt-item:last-child { border-bottom: none; }
+
+  .task-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-check {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border2);
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .task-check.done { background: var(--green); border-color: var(--green); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* STATUS CHANGE in sidebar */
+  .select-group { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+  .select-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+  /* VALUE FORMATTING */
+  .value-green { color: var(--green); }
+  .value-mono { font-family: 'DM Mono', monospace; }
+
+  /* Loading */
+  .loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--text3); font-size: 14px; gap: 10px; }
+  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Pipeline stage actions */
+  .stage-move-select {
+    font-size: 11px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    border-radius: 4px;
+    padding: 3px 6px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .appt-form { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .modal-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+// ─── CONFIG ───────────────────────────────────────────────────────
+// Change this to your backend URL when deploying
+const API = 'https://leadflow-production-4c13.up.railway.app/api';
+
+// ─── HELPERS ──────────────────────────────────────────────────────
+const fmt = (v) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(v || 0);
+
+const initials = (name) => name ? name.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase() : '?';
+
+const badgeClass = (val) => {
+  if (!val) return '';
+  const k = val.toLowerCase().replace(/\s/g, '-').replace('é','e').replace('ó','o').replace('ú','u').replace('á','a').replace('í','i');
+  return `badge badge-${k}`;
+};
+
+const CHANNEL_COLORS = {
+  WhatsApp: '#25d366', Facebook: '#1877f2', Instagram: '#e1306c',
+  Chat: '#3b82f6', Teléfono: '#eab308', Web: '#22c55e'
+};
+
+const STATUS_STAGES = ['Nuevo','Contactado','Calificado','Propuesta','Negociación','Ganado','Perdido'];
+const STAGE_COLORS = {
+  Nuevo:'#3b82f6', Contactado:'#60a5fa', Calificado:'#a855f7',
+  Propuesta:'#f97316', Negociación:'#fbbf24', Ganado:'#22c55e', Perdido:'#ef4444'
+};
+
+const fmtDate = (s) => {
+  if (!s) return '';
+  try { return new Date(s).toLocaleString('es-MX', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }); } catch { return s; }
+};
+
+// ─── API CLIENT ───────────────────────────────────────────────────
+const api = {
+  get: async (path) => { const r = await fetch(API + path); return r.json(); },
+  post: async (path, body) => { const r = await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); return r.json(); },
+  put: async (path, body) => { const r = await fetch(API + path, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); return r.json(); },
+  patch: async (path, body) => { const r = await fetch(API + path, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); return r.json(); },
+  del: async (path) => { const r = await fetch(API + path, { method:'DELETE' }); return r.json(); },
+};
+
+// ─── TOAST ────────────────────────────────────────────────────────
+function Toast({ msg, onClose }) {
+  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
+  return <div className="toast">✓ {msg}</div>;
+}
+
+// ─── MODAL: NEW LEAD ──────────────────────────────────────────────
+function NewLeadModal({ onClose, onCreated }) {
+  const [form, setForm] = useState({ name:'', company:'', email:'', phone:'', channel:'Web', status:'Nuevo', priority:'Media', estimated_value:'', notes:'' });
+  const [loading, setLoading] = useState(false);
+
+  const set = (k,v) => setForm(f => ({...f, [k]:v}));
+
+  const submit = async () => {
+    if (!form.name) return;
+    setLoading(true);
+    try {
+      const lead = await api.post('/leads', { ...form, estimated_value: parseFloat(form.estimated_value) || 0 });
+      onCreated(lead);
+      onClose();
+    } finally { setLoading(false); }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-title">➕ Nuevo Lead</div>
+        <div className="modal-form">
+          <div className="modal-grid">
+            <div className="form-group">
+              <label className="form-label">Nombre *</label>
+              <input className="input" placeholder="María González" value={form.name} onChange={e=>set('name',e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Empresa</label>
+              <input className="input" placeholder="Tech Innovate MX" value={form.company} onChange={e=>set('company',e.target.value)} />
+            </div>
+          </div>
+          <div className="modal-grid">
+            <div className="form-group">
+              <label className="form-label">Email</label>
+              <input className="input" type="email" placeholder="correo@empresa.com" value={form.email} onChange={e=>set('email',e.target.value)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Teléfono</label>
+              <input className="input" placeholder="+52 55 1234 5678" value={form.phone} onChange={e=>set('phone',e.target.value)} />
+            </div>
+          </div>
+          <div className="modal-grid">
+            <div className="form-group">
+              <label className="form-label">Canal</label>
+              <select className="input" value={form.channel} onChange={e=>set('channel',e.target.value)}>
+                {Object.keys(CHANNEL_COLORS).map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Valor estimado</label>
+              <input className="input" type="number" placeholder="15000" value={form.estimated_value} onChange={e=>set('estimated_value',e.target.value)} />
+            </div>
+          </div>
+          <div className="modal-grid">
+            <div className="form-group">
+              <label className="form-label">Estado</label>
+              <select className="input" value={form.status} onChange={e=>set('status',e.target.value)}>
+                {STATUS_STAGES.map(s => <option key={s}>{s}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Prioridad</label>
+              <select className="input" value={form.priority} onChange={e=>set('priority',e.target.value)}>
+                <option>Alta</option><option>Media</option><option>Baja</option>
+              </select>
+            </div>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Notas</label>
+            <textarea className="input" placeholder="Información relevante del lead..." value={form.notes} onChange={e=>set('notes',e.target.value)} />
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="btn btn-ghost" onClick={onClose}>Cancelar</button>
+          <button className="btn btn-primary" onClick={submit} disabled={loading || !form.name}>
+            {loading ? '...' : '✓ Guardar Lead'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── DASHBOARD PAGE ───────────────────────────────────────────────
+function DashboardPage({ onNavigate }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => { api.get('/dashboard').then(setData); }, []);
+
+  if (!data) return <div className="loading"><div className="spinner"></div> Cargando dashboard...</div>;
+
+  const maxCh = Math.max(...(data.byChannel.map(c=>c.count)||[1]));
+
+  return (
+    <div className="dashboard-page">
+      <div className="page-header" style={{padding:0}}>
+        <div>
+          <div className="page-title">Dashboard</div>
+          <div className="page-subtitle">Resumen de tu pipeline de ventas</div>
+        </div>
+      </div>
+
+      <div className="stats-grid">
+        {[
+          { label:'Total Leads', value: data.totalLeads, icon:'👥', color:'#3b82f6', bg:'rgba(59,130,246,0.12)' },
+          { label:'Nuevos', value: data.newLeads, icon:'➕', color:'#22c55e', bg:'rgba(34,197,94,0.12)' },
+          { label:'Ganados', value: data.wonLeads, icon:'🏆', color:'#f59e0b', bg:'rgba(245,158,11,0.12)' },
+          { label:'Valor Total', value: fmt(data.totalValue), icon:'💰', color:'#a855f7', bg:'rgba(168,85,247,0.12)', isString: true },
+        ].map(s => (
+          <div key={s.label} className="stat-card">
+            <div className="stat-icon" style={{background: s.bg, color: s.color}}>{s.icon}</div>
+            <div>
+              <div className="stat-value" style={s.isString ? {fontSize:'20px'} : {}}>{s.value}</div>
+              <div className="stat-label">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="dashboard-grid">
+        <div className="card">
+          <div className="section-header">
+            <span className="section-title">Leads Recientes</span>
+            <button className="btn btn-ghost btn-sm" onClick={() => onNavigate('leads')}>Ver todos →</button>
+          </div>
+          {data.recentLeads.map(lead => (
+            <div key={lead.id} className="lead-row" onClick={() => onNavigate('lead', lead)}>
+              <div className="lead-avatar">{initials(lead.name)}</div>
+              <div className="lead-info">
+                <div className="lead-name">{lead.name}</div>
+                <div className="lead-company">{lead.company}</div>
+              </div>
+              <div className="lead-right">
+                <span className={badgeClass(lead.channel)}>{lead.channel}</span>
+                <span className={badgeClass(lead.status)}>{lead.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="card">
+          <div className="section-header">
+            <span className="section-title">Leads por Canal</span>
+          </div>
+          {/* Donut SVG */}
+          <DonutChart data={data.byChannel} />
+          <div className="channel-chart">
+            {data.byChannel.map(ch => (
+              <div key={ch.channel} className="channel-row">
+                <div className="channel-dot" style={{background: CHANNEL_COLORS[ch.channel] || '#666'}}></div>
+                <span className="channel-name">{ch.channel}</span>
+                <div className="channel-bar-wrap">
+                  <div className="channel-bar" style={{width: `${(ch.count/maxCh)*100}%`, background: CHANNEL_COLORS[ch.channel] || '#666'}}></div>
+                </div>
+                <span className="channel-count">{ch.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DonutChart({ data }) {
+  const size = 120, cx = 60, cy = 60, r = 40, strokeW = 18;
+  const circumference = 2 * Math.PI * r;
+  const total = data.reduce((s, d) => s + d.count, 0) || 1;
+
+  let offset = 0;
+  const slices = data.map(d => {
+    const pct = d.count / total;
+    const dash = pct * circumference;
+    const gap = circumference - dash;
+    const slice = { ...d, dash, gap, offset };
+    offset += dash;
+    return slice;
+  });
+
+  return (
+    <div className="donut-wrap">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--bg3)" strokeWidth={strokeW} />
+        {slices.map(s => (
+          <circle key={s.channel} cx={cx} cy={cy} r={r} fill="none"
+            stroke={CHANNEL_COLORS[s.channel] || '#666'} strokeWidth={strokeW}
+            strokeDasharray={`${s.dash} ${s.gap}`}
+            strokeDashoffset={-s.offset + circumference/4}
+            style={{transition: 'stroke-dasharray 0.5s'}}
+          />
+        ))}
+        <text x={cx} y={cy+1} textAnchor="middle" dominantBaseline="middle" fill="var(--text)" fontSize="16" fontWeight="700" fontFamily="DM Sans">{total}</text>
+        <text x={cx} y={cy+14} textAnchor="middle" fill="var(--text3)" fontSize="9" fontFamily="DM Sans">leads</text>
+      </svg>
+    </div>
+  );
+}
+
+// ─── LEADS LIST PAGE ──────────────────────────────────────────────
+function LeadsPage({ onNavigate }) {
+  const [leads, setLeads] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [filterChannel, setFilterChannel] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (filterStatus) params.set('status', filterStatus);
+    if (filterChannel) params.set('channel', filterChannel);
+    if (search) params.set('search', search);
+    const data = await api.get('/leads?' + params.toString());
+    setLeads(data);
+    setLoading(false);
+  }, [search, filterStatus, filterChannel]);
+
+  useEffect(() => { const t = setTimeout(load, 300); return () => clearTimeout(t); }, [load]);
+
+  return (
+    <div className="leads-page">
+      <div className="page-header" style={{padding:0}}>
+        <div>
+          <div className="page-title">Leads</div>
+          <div className="page-subtitle">{leads.length} lead{leads.length!==1?'s':''} encontrado{leads.length!==1?'s':''}</div>
+        </div>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>➕ Nuevo Lead</button>
+      </div>
+
+      <div className="leads-toolbar">
+        <div className="search-input-wrap">
+          <span className="search-icon">🔍</span>
+          <input className="input" placeholder="Buscar por nombre, empresa o email..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <select className="input" style={{width:'160px'}} value={filterStatus} onChange={e=>setFilterStatus(e.target.value)}>
+          <option value="">Todos los estados</option>
+          {STATUS_STAGES.map(s => <option key={s}>{s}</option>)}
+        </select>
+        <select className="input" style={{width:'140px'}} value={filterChannel} onChange={e=>setFilterChannel(e.target.value)}>
+          <option value="">Todos los canales</option>
+          {Object.keys(CHANNEL_COLORS).map(c => <option key={c}>{c}</option>)}
+        </select>
+      </div>
+
+      <div className="card" style={{padding:0, overflow:'hidden'}}>
+        {loading ? (
+          <div className="loading"><div className="spinner"></div></div>
+        ) : (
+          <table className="leads-table">
+            <thead>
+              <tr>
+                <th>Lead</th>
+                <th>Canal</th>
+                <th>Estado</th>
+                <th>Prioridad</th>
+                <th>Valor</th>
+                <th>Creado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {leads.map(lead => (
+                <tr key={lead.id} style={{cursor:'pointer'}} onClick={() => onNavigate('lead', lead)}>
+                  <td>
+                    <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+                      <div className="lead-avatar" style={{width:32, height:32, fontSize:12}}>{initials(lead.name)}</div>
+                      <div>
+                        <div style={{fontWeight:600, fontSize:13}}>{lead.name}</div>
+                        <div style={{color:'var(--text3)', fontSize:11}}>{lead.company}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td><span className={badgeClass(lead.channel)}>{lead.channel}</span></td>
+                  <td><span className={badgeClass(lead.status)}>{lead.status}</span></td>
+                  <td>
+                    <div style={{display:'flex', alignItems:'center', gap:6}}>
+                      <span className={`priority-dot priority-${lead.priority?.toLowerCase()}`}></span>
+                      <span style={{fontSize:12, color:'var(--text2)'}}>{lead.priority}</span>
+                    </div>
+                  </td>
+                  <td><span className="value-mono" style={{color:'var(--text2)', fontSize:12}}>{fmt(lead.estimated_value)}</span></td>
+                  <td style={{color:'var(--text3)', fontSize:11}}>{fmtDate(lead.created_at)}</td>
+                  <td>
+                    <button className="btn btn-ghost btn-sm" onClick={e=>{e.stopPropagation(); onNavigate('lead', lead);}}>Ver →</button>
+                  </td>
+                </tr>
+              ))}
+              {leads.length === 0 && (
+                <tr><td colSpan="7"><div className="empty-state"><div className="empty-icon">👤</div>No se encontraron leads</div></td></tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {showModal && <NewLeadModal onClose={() => setShowModal(false)} onCreated={lead => { setLeads(l => [lead, ...l]); }} />}
+    </div>
+  );
+}
+
+// ─── PIPELINE PAGE ────────────────────────────────────────────────
+function PipelinePage({ onNavigate }) {
+  const [pipeline, setPipeline] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [sortByValue, setSortByValue] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const data = await api.get('/pipeline');
+    setPipeline(data);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const moveStage = async (leadId, newStatus) => {
+    await api.patch(`/leads/${leadId}/status`, { status: newStatus });
+    load();
+  };
+
+  const visibleStages = STATUS_STAGES.filter(s => s !== 'Perdido');
+
+  return (
+    <div className="pipeline-page">
+      <div className="page-header" style={{padding:0}}>
+        <div>
+          <div className="page-title">Pipeline</div>
+          <div className="page-subtitle">Arrastra los leads entre etapas</div>
+        </div>
+        <div style={{display:'flex', gap:8}}>
+          <button className="btn btn-ghost" onClick={() => setSortByValue(v=>!v)}>
+            ↕ {sortByValue ? 'Ordenar por fecha' : 'Ordenar por valor'}
+          </button>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>➕ Nuevo Lead</button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="loading"><div className="spinner"></div></div>
+      ) : (
+        <div className="pipeline-board">
+          {visibleStages.map(stage => {
+            const col = pipeline[stage] || { leads:[], total:0, count:0 };
+            let leads = [...col.leads];
+            if (sortByValue) leads.sort((a,b) => b.estimated_value - a.estimated_value);
+            return (
+              <div key={stage} className="pipeline-column">
+                <div className="col-header">
+                  <div className="col-dot" style={{background: STAGE_COLORS[stage]}}></div>
+                  <span className="col-title">{stage}</span>
+                  <span className="col-count">{col.count}</span>
+                </div>
+                <div className="col-value" style={{marginBottom:10}}>{fmt(col.total)}</div>
+                {leads.map(lead => (
+                  <div key={lead.id} className="pipeline-card" onClick={() => onNavigate('lead', lead)}>
+                    <div className="pipeline-card-header">
+                      <div className="pipeline-card-avatar">{initials(lead.name)}</div>
+                      <div>
+                        <div className="pipeline-card-name">{lead.name}</div>
+                        <div className="pipeline-card-company">{lead.company}</div>
+                      </div>
+                    </div>
+                    <span className={badgeClass(lead.channel)}>{lead.channel}</span>
+                    <div className="pipeline-card-footer">
+                      <span className="pipeline-value">{fmt(lead.estimated_value)}</span>
+                      <select className="stage-move-select"
+                        value={lead.status}
+                        onClick={e => e.stopPropagation()}
+                        onChange={e => moveStage(lead.id, e.target.value)}
+                      >
+                        {STATUS_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                ))}
+                {leads.length === 0 && (
+                  <div style={{padding:'20px', textAlign:'center', color:'var(--text3)', fontSize:12, border:'1px dashed var(--border)', borderRadius:'var(--radius-sm)'}}>
+                    Sin leads
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {showModal && <NewLeadModal onClose={() => setShowModal(false)} onCreated={() => load()} />}
+    </div>
+  );
+}
+
+// ─── LEAD DETAIL PAGE ─────────────────────────────────────────────
+function LeadDetailPage({ leadId, onBack }) {
+  const [lead, setLead] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [noteText, setNoteText] = useState('');
+  const [newTask, setNewTask] = useState('');
+  const [showApptForm, setShowApptForm] = useState(false);
+  const [apptDate, setApptDate] = useState('');
+  const [apptChannel, setApptChannel] = useState('Teléfono');
+  const [apptNotes, setApptNotes] = useState('');
+  const [toast, setToast] = useState('');
+
+  const load = async () => {
+    setLoading(true);
+    const data = await api.get(`/leads/${leadId}`);
+    setLead(data);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, [leadId]);
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+
+  const updateStatus = async (status) => {
+    await api.patch(`/leads/${leadId}/status`, { status });
+    setLead(l => ({...l, status}));
+    showToast(`Estado actualizado a ${status}`);
+  };
+
+  const updatePriority = async (priority) => {
+    await api.put(`/leads/${leadId}`, { ...lead, priority });
+    setLead(l => ({...l, priority}));
+    showToast('Prioridad actualizada');
+  };
+
+  const addNote = async () => {
+    if (!noteText.trim()) return;
+    const note = await api.post(`/leads/${leadId}/notes`, { content: noteText });
+    // Also add as activity
+    await api.post(`/leads/${leadId}/activities`, { type:'Nota', content: noteText, channel: lead.channel, direction:'outbound' });
+    setNoteText('');
+    load();
+    showToast('Nota guardada');
+  };
+
+  const addTask = async () => {
+    if (!newTask.trim()) return;
+    await api.post(`/leads/${leadId}/tasks`, { title: newTask });
+    setNewTask('');
+    load();
+    showToast('Tarea creada');
+  };
+
+  const completeTask = async (taskId) => {
+    await api.patch(`/tasks/${taskId}/complete`, {});
+    load();
+  };
+
+  const saveAppt = async () => {
+    if (!apptDate) return;
+    await api.post(`/leads/${leadId}/appointments`, { scheduled_at: apptDate, channel: apptChannel, notes: apptNotes });
+    setShowApptForm(false);
+    setApptDate(''); setApptNotes('');
+    load();
+    showToast('Cita agendada');
+  };
+
+  if (loading) return <div className="loading"><div className="spinner"></div></div>;
+  if (!lead) return <div className="loading">Lead no encontrado</div>;
+
+  return (
+    <div className="detail-page">
+      <button className="detail-back" onClick={onBack}>← Volver a leads</button>
+
+      <div className="detail-grid">
+        {/* LEFT: Profile */}
+        <div>
+          <div className="lead-profile">
+            <div className="profile-avatar">{initials(lead.name)}</div>
+            <div className="profile-name">{lead.name}</div>
+            <div className="profile-company">🏢 {lead.company}</div>
+            <div className="profile-tags">
+              <span className={badgeClass(lead.channel)}>{lead.channel}</span>
+              <span className={badgeClass(lead.status)}>{lead.status}</span>
+              <span className={badgeClass(lead.priority)}>↑ {lead.priority}</span>
+            </div>
+            <div className="profile-contacts">
+              {lead.email && <div className="contact-row">✉️ {lead.email}</div>}
+              {lead.phone && <div className="contact-row">📞 {lead.phone}</div>}
+              {lead.agent && <div className="contact-row">🤖 {lead.agent}</div>}
+            </div>
+            <div className="profile-value">
+              <div className="value-label">Valor estimado</div>
+              <div className="value-amount">{fmt(lead.estimated_value)}</div>
+            </div>
+            {lead.notes && (
+              <div className="profile-notes">
+                <div className="notes-label">Notas</div>
+                <div className="notes-text">{lead.notes}</div>
+              </div>
+            )}
+            <div className="select-group">
+              <div>
+                <div className="select-label">Cambiar Estado</div>
+                <select className="status-select" value={lead.status} onChange={e => updateStatus(e.target.value)}>
+                  {STATUS_STAGES.map(s => <option key={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <div className="select-label">Cambiar Prioridad</div>
+                <select className="priority-select" value={lead.priority} onChange={e => updatePriority(e.target.value)}>
+                  <option>Alta</option><option>Media</option><option>Baja</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: Details */}
+        <div className="detail-right">
+          {/* Appointments */}
+          <div className="detail-section">
+            <div className="section-header">
+              <span className="section-title">📅 Citas de Contacto</span>
+              <button className="btn btn-ghost btn-sm" onClick={() => setShowApptForm(v=>!v)}>
+                {showApptForm ? 'Cancelar' : '+ Agendar'}
+              </button>
+            </div>
+            {showApptForm && (
+              <div className="appt-form">
+                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:10}}>
+                  <div className="form-group">
+                    <label className="form-label">Fecha y hora</label>
+                    <input className="input" type="datetime-local" value={apptDate} onChange={e=>setApptDate(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Canal</label>
+                    <select className="input" value={apptChannel} onChange={e=>setApptChannel(e.target.value)}>
+                      {Object.keys(CHANNEL_COLORS).map(c => <option key={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <textarea className="input" placeholder="Notas de la cita (opcional)..." value={apptNotes} onChange={e=>setApptNotes(e.target.value)} style={{minHeight:60}} />
+                <div style={{display:'flex', gap:8}}>
+                  <button className="btn btn-primary btn-sm" onClick={saveAppt}>Guardar cita</button>
+                </div>
+              </div>
+            )}
+            {lead.appointments?.length ? lead.appointments.map(a => (
+              <div key={a.id} className="appt-item">
+                <span style={{fontSize:18}}>📅</span>
+                <div>
+                  <div style={{fontSize:13, fontWeight:600}}>{fmtDate(a.scheduled_at)}</div>
+                  <div style={{fontSize:11, color:'var(--text3)'}}>{a.channel} {a.notes && `· ${a.notes}`}</div>
+                </div>
+              </div>
+            )) : (
+              !showApptForm && <div className="empty-state"><div className="empty-icon">📅</div>Sin citas agendadas</div>
+            )}
+          </div>
+
+          {/* Tasks */}
+          <div className="detail-section">
+            <div className="section-header">
+              <span className="section-title">✅ Tareas y Actividades</span>
+            </div>
+            <div style={{display:'flex', gap:8, marginBottom:12}}>
+              <input className="input" placeholder="Nueva tarea..." value={newTask} onChange={e=>setNewTask(e.target.value)}
+                onKeyDown={e => e.key==='Enter' && addTask()} />
+              <button className="btn btn-ghost btn-sm" onClick={addTask}>Agregar</button>
+            </div>
+            {lead.tasks?.length ? lead.tasks.map(t => (
+              <div key={t.id} className="task-item">
+                <div className={`task-check ${t.completed ? 'done' : ''}`} onClick={() => !t.completed && completeTask(t.id)}>
+                  {t.completed && '✓'}
+                </div>
+                <span style={{fontSize:13, color: t.completed ? 'var(--text3)' : 'var(--text)', textDecoration: t.completed ? 'line-through' : 'none'}}>
+                  {t.title}
+                </span>
+              </div>
+            )) : (
+              <div className="empty-state"><div className="empty-icon">✅</div>Sin tareas programadas</div>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div className="detail-section">
+            <div className="section-header">
+              <span className="section-title">📝 Agregar Nota</span>
+            </div>
+            <div className="note-form">
+              <textarea className="input" placeholder="Escribe una nota sobre este lead..." value={noteText}
+                onChange={e=>setNoteText(e.target.value)} style={{minHeight:72}} />
+              <button className="note-send-btn" onClick={addNote}>➤</button>
+            </div>
+          </div>
+
+          {/* Activity */}
+          <div className="detail-section">
+            <div className="section-header">
+              <span className="section-title">🕐 Historial de Actividad</span>
+            </div>
+            {lead.activities?.length ? lead.activities.map(a => (
+              <div key={a.id} className="activity-item">
+                <div className="activity-icon">{a.direction==='inbound' ? '💬' : '↩️'}</div>
+                <div className="activity-content">
+                  <div className="activity-type">
+                    {a.type}
+                    <span className={badgeClass(a.channel)}>{a.channel}</span>
+                  </div>
+                  <div className="activity-text">{a.content}</div>
+                  {a.direction && <div className="activity-agent">— {a.direction === 'inbound' ? 'Cliente' : (lead.agent || 'Agente')}</div>}
+                </div>
+                <div className="activity-time">{fmtDate(a.created_at)}</div>
+              </div>
+            )) : (
+              <div className="empty-state"><div className="empty-icon">💬</div>Sin actividad registrada</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {toast && <Toast msg={toast} onClose={() => setToast('')} />}
+    </div>
+  );
+}
+
+// ─── APP SHELL ────────────────────────────────────────────────────
+function App() {
+  const [page, setPage] = useState('dashboard');
+  const [selectedLead, setSelectedLead] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
+
+  const navigate = (target, data) => {
+    if (target === 'lead') { setSelectedLead(data); setPage('lead'); }
+    else { setPage(target); setSelectedLead(null); }
+  };
+
+  const navItems = [
+    { id: 'dashboard', icon: '⊞', label: 'Dashboard' },
+    { id: 'leads', icon: '👥', label: 'Leads' },
+    { id: 'pipeline', icon: '⋮⋮', label: 'Pipeline' },
+  ];
+
+  return (
+    <>
+      <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-logo">
+          <div className="logo-icon">⚡</div>
+          <span className="logo-text">LeadFlow</span>
+        </div>
+        <nav className="sidebar-nav">
+          {navItems.map(item => (
+            <button key={item.id} className={`nav-item ${page === item.id || (page==='lead' && item.id==='leads') ? 'active' : ''}`}
+              onClick={() => navigate(item.id)}>
+              <span className="nav-icon">{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <button className="collapse-btn" onClick={() => setCollapsed(v=>!v)}>
+            <span className="nav-icon">{collapsed ? '→' : '←'}</span>
+            <span>Colapsar</span>
+          </button>
+        </div>
+      </div>
+
+      <main className={`main ${collapsed ? 'expanded' : ''}`}>
+        {page === 'dashboard' && <DashboardPage onNavigate={navigate} />}
+        {page === 'leads' && <LeadsPage onNavigate={navigate} />}
+        {page === 'pipeline' && <PipelinePage onNavigate={navigate} />}
+        {page === 'lead' && selectedLead && (
+          <LeadDetailPage leadId={selectedLead.id} onBack={() => navigate('leads')} />
+        )}
+      </main>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
