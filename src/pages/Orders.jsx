@@ -38,19 +38,26 @@ const CAMPOS_POR_ESTADO = {
   despachado_domicilio: 'entrega_final',
 }
 
+// Normaliza estados legacy del agente al nuevo flujo
+function normalizarStatus(key) {
+  if (!key || key === 'pendiente' || key === 'confirmada') return 'pendiente_pago'
+  if (key === 'entregada') return 'entregado_taller'
+  return key
+}
+
 function getEstado(key) {
-  return ESTADOS.find(e => e.key === key) || ESTADOS[0]
+  return ESTADOS.find(e => e.key === normalizarStatus(key)) || ESTADOS[0]
 }
 
 function getIndexEstado(key) {
-  const idx = ESTADOS.findIndex(e => e.key === key)
+  const idx = ESTADOS.findIndex(e => e.key === normalizarStatus(key))
   return idx === -1 ? 0 : idx
 }
 
 function getSiguienteEstado(key) {
-  const idx = getIndexEstado(key)
+  const keyNorm = normalizarStatus(key)
   const siguientes = ESTADOS.filter(e => !ESTADOS_FINALES.includes(e.key))
-  const currentIdx = siguientes.findIndex(e => e.key === key)
+  const currentIdx = siguientes.findIndex(e => e.key === keyNorm)
   if (currentIdx === -1 || currentIdx >= siguientes.length - 1) return null
   return siguientes[currentIdx + 1]
 }
@@ -62,13 +69,14 @@ function OrderPanel({ order, onClose, onUpdate }) {
   const [tipoEntrega, setTipoEntrega] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const estadoActual = getEstado(order.status)
-  const siguienteEstado = getSiguienteEstado(order.status)
-  const esFinal = ESTADOS_FINALES.includes(order.status)
+  const statusNorm = normalizarStatus(order.status)
+  const estadoActual = getEstado(statusNorm)
+  const siguienteEstado = getSiguienteEstado(statusNorm)
+  const esFinal = ESTADOS_FINALES.includes(statusNorm)
   const camposRequeridos = siguienteEstado ? CAMPOS_POR_ESTADO[siguienteEstado.key] : null
 
   const idxActual = ESTADOS.filter(e => !ESTADOS_FINALES.includes(e.key))
-    .findIndex(e => e.key === order.status)
+    .findIndex(e => e.key === statusNorm)
 
   async function avanzar() {
     if (!siguienteEstado) return
