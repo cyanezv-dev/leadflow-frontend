@@ -1,191 +1,222 @@
-.page{display:flex;flex-direction:column;height:100%;overflow:hidden}
-.content{flex:1;overflow:hidden;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+/* ── Page shell ──────────────────────────────────────────────── */
+.page { display:flex; flex-direction:column; height:100%; overflow:hidden }
+.content { flex:1; overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:12px; min-height:0 }
 
-/* Welcome */
-.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.welcomeIcon{font-size:48px}
-.welcomeTitle{font-size:22px;font-weight:700;color:var(--text)}
-.welcomeSub{font-size:14px;color:var(--text3)}
+/* ── Welcome ─────────────────────────────────────────────────── */
+.welcome { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; min-height:300px }
+.welcomeIcon  { font-size:48px }
+.welcomeTitle { font-size:22px; font-weight:700; color:var(--text) }
+.welcomeSub   { font-size:14px; color:var(--text3) }
 
-/* Search */
-.searchBox{position:relative;width:100%;max-width:480px}
-.searchWrap{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.searchIcon{padding:0 10px;font-size:14px}
-.searchInput{flex:1;background:none;border:none;color:var(--text);font-family:var(--font-body);font-size:14px;padding:10px 12px;outline:none}
-.searchDrop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);box-shadow:var(--shadow);z-index:100;overflow:hidden}
-.searchItem{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
-.searchItem:hover{background:var(--bg3)}
-.searchItem:last-child{border-bottom:none}
-.searchName{font-size:13px;font-weight:600;color:var(--text)}
-.searchMeta{font-size:11px;color:var(--text3);margin-top:2px}
+/* ── Search ──────────────────────────────────────────────────── */
+.searchBox  { position:relative; width:100%; max-width:480px }
+.searchWrap { display:flex; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden }
+.searchIcon  { padding:0 10px; font-size:14px }
+.searchInput { flex:1; background:none; border:none; color:var(--text); font-family:var(--font-body); font-size:14px; padding:10px 12px; outline:none }
+.searchDrop  { position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius); box-shadow:var(--shadow); z-index:100; overflow:hidden }
+.searchItem  { padding:10px 14px; cursor:pointer; border-bottom:1px solid var(--border); transition:background .1s }
+.searchItem:hover { background:var(--bg3) }
+.searchItem:last-child { border-bottom:none }
+.searchName  { font-size:13px; font-weight:600; color:var(--text) }
+.searchMeta  { font-size:11px; color:var(--text3); margin-top:2px }
 
-/* Top bar */
-.topBar{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.topBarLeft{display:flex;align-items:center;gap:8px;flex:1}
-.topBarLabel{font-size:12px;color:var(--text3)}
-.topBarName{font-size:14px;color:var(--text)}
-.topBarPhone{font-size:12px;color:var(--text3);font-family:var(--font-mono)}
+/* ── Top bar ─────────────────────────────────────────────────── */
+.topBar     { display:flex; align-items:center; gap:16px; flex-wrap:wrap; flex-shrink:0 }
+.topBarLeft { display:flex; align-items:center; gap:8px; flex:1; min-width:0; flex-wrap:wrap }
+.topBarLabel { font-size:12px; color:var(--text3) }
+.topBarName  { font-size:14px; color:var(--text) }
+.topBarPhone { font-size:12px; color:var(--text3); font-family:var(--font-mono) }
 
-/* 3 columns */
-.panels{flex:1;display:grid;grid-template-columns:300px 1fr 300px;gap:14px;overflow:hidden;min-height:0}
+/* ── Quick access ────────────────────────────────────────────── */
+.quickAccess { display:flex; gap:10px; flex-shrink:0; flex-wrap:wrap }
+.quickCard   { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); cursor:pointer; transition:all .15s }
+.quickCard:hover { border-color:var(--accent); background:var(--accent-dim) }
+.quickIcon  { font-size:24px }
+.quickTitle { font-size:13px; font-weight:700; color:var(--text) }
+.quickSub   { font-size:11px; color:var(--text3) }
 
-/* Left panel */
-.leftPanel{display:flex;flex-direction:column;gap:10px;overflow:hidden;min-height:0}
-.profileCard{padding:14px;flex-shrink:0}
-.profileTop{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
-.profileAvatar{width:42px;height:42px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
-.profileInfo{flex:1;min-width:0}
-.profileName{font-size:14px;font-weight:700;color:var(--text)}
-.profilePhone{font-size:12px;color:var(--text3);font-family:var(--font-mono)}
-.profileMeta{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
-.channelBadge{font-size:10px;font-weight:600;color:var(--accent);background:var(--accent-dim);padding:2px 6px;border-radius:8px}
-.statusBadge{font-size:10px;font-weight:600;color:var(--text3);background:var(--bg3);padding:2px 6px;border-radius:8px}
-.changeBtn{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 8px;cursor:pointer;font-size:12px;flex-shrink:0}
-.profileEmail{font-size:11px;color:var(--text3)}
-.prevOrders{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
-.prevTitle{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.prevOrder{font-size:11px;color:var(--text2);padding:2px 0}
+/* ── 3-column grid ───────────────────────────────────────────── */
+.panels {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  align-items: start;   /* panels grow to content, don't stretch */
+}
 
-.chatCard{flex:1;padding:12px;display:flex;flex-direction:column;overflow:hidden;min-height:0}
-.chatTitle{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;flex-shrink:0}
-.chatMessages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
-.chatEmpty{font-size:12px;color:var(--text4);text-align:center;padding:20px}
-.msg{display:flex;flex-direction:column;max-width:90%}
-.msgIn{align-self:flex-start}
-.msgOut{align-self:flex-end}
-.msgBubble{font-size:12px;padding:6px 10px;border-radius:10px;line-height:1.4;white-space:pre-wrap;word-break:break-word}
-.msgIn .msgBubble{background:var(--bg3);color:var(--text)}
-.msgOut .msgBubble{background:var(--accent);color:#fff}
-.msgTime{font-size:10px;color:var(--text4);margin-top:2px;padding:0 4px}
-.msgIn .msgTime{text-align:left}
-.msgOut .msgTime{text-align:right}
+/* ── Left panel ──────────────────────────────────────────────── */
+.leftPanel  { display:flex; flex-direction:column; gap:10px }
+.profileCard { padding:14px }
+.profileTop  { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px }
+.profileAvatar { width:42px; height:42px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; color:#fff; flex-shrink:0 }
+.profileInfo { flex:1; min-width:0 }
+.profileName  { font-size:14px; font-weight:700; color:var(--text) }
+.profilePhone { font-size:12px; color:var(--text3); font-family:var(--font-mono) }
+.profileMeta  { display:flex; gap:6px; margin-top:4px; flex-wrap:wrap }
+.channelBadge { font-size:10px; font-weight:600; color:var(--accent); background:var(--accent-dim); padding:2px 6px; border-radius:8px }
+.statusBadge  { font-size:10px; font-weight:600; color:var(--text3); background:var(--bg3); padding:2px 6px; border-radius:8px }
+.changeBtn  { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px 8px; cursor:pointer; font-size:12px; flex-shrink:0 }
+.profileEmail { font-size:11px; color:var(--text3) }
+.prevOrders { margin-top:8px; padding-top:8px; border-top:1px solid var(--border) }
+.prevTitle  { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px }
+.prevOrder  { font-size:11px; color:var(--text2); padding:2px 0 }
 
-/* Center panel */
-.centerPanel{display:flex;flex-direction:column;gap:10px;overflow:hidden;min-height:0}
-.summaryCard{padding:14px;flex-shrink:0}
-.summaryHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.summaryTitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-.summaryLoading{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);padding:8px 0}
-.summaryContent{display:flex;flex-direction:column;gap:8px}
-.summaryText{font-size:13px;color:var(--text);line-height:1.5;margin:0}
-.summaryTags{display:flex;flex-wrap:wrap;gap:6px}
-.urgTag{font-size:11px;font-weight:700}
-.infoTag{font-size:11px;color:var(--text2);background:var(--bg3);padding:2px 8px;border-radius:10px}
-.accionBox{font-size:12px;color:var(--text2);background:var(--accent-dim);border:1px solid var(--accent);padding:8px 10px;border-radius:var(--radius-sm)}
-.summaryEmpty{font-size:12px;color:var(--text4);text-align:center;padding:12px 0}
+.chatCard     { padding:12px; display:flex; flex-direction:column }
+.chatTitle    { font-size:12px; font-weight:700; color:var(--text2); margin-bottom:8px }
+.chatMessages { max-height:320px; overflow-y:auto; display:flex; flex-direction:column; gap:6px }
+.chatEmpty    { font-size:12px; color:var(--text4); text-align:center; padding:20px }
+.msg          { display:flex; flex-direction:column; max-width:90% }
+.msgIn        { align-self:flex-start }
+.msgOut       { align-self:flex-end }
+.msgBubble    { font-size:12px; padding:6px 10px; border-radius:10px; line-height:1.5; white-space:pre-wrap; word-break:break-word }
+.msgIn .msgBubble  { background:var(--bg3); color:var(--text) }
+.msgOut .msgBubble { background:var(--accent); color:#fff }
+.msgTime { font-size:10px; color:var(--text4); margin-top:2px; padding:0 4px }
+.msgIn .msgTime  { text-align:left }
+.msgOut .msgTime { text-align:right }
 
-.productsCard{flex:1;padding:14px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-.productsHeader{flex-shrink:0;margin-bottom:10px}
-.productsTitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.medidaRow{display:flex;align-items:center;gap:8px}
-.medidaInput{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-mono);font-size:13px;padding:7px 10px;outline:none}
-.medidaInput:focus{border-color:var(--accent)}
-.cantInput{width:60px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-mono);font-size:13px;padding:7px 8px;outline:none;text-align:center}
-.cantLabel{font-size:12px;color:var(--text3)}
-.productsLoading,.productsEmpty{font-size:12px;color:var(--text4);text-align:center;padding:20px}
-.tiersList{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.tierGroup{display:flex;flex-direction:column;gap:6px}
-.tierTitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.productRow{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;transition:all .1s}
-.productRow:hover{border-color:var(--accent)}
-.productInfo{flex:1;min-width:0}
-.productName{font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.productMedida{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
-.productPrices{text-align:right}
-.productUnit{font-size:11px;color:var(--text3)}
-.productTotal{font-size:13px;font-weight:700;color:var(--accent)}
-.productStock{flex-shrink:0}
+/* ── Center panel ────────────────────────────────────────────── */
+.centerPanel  { display:flex; flex-direction:column; gap:10px }
+.summaryCard  { padding:14px }
+.summaryHeader { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px }
+.summaryTitle  { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px }
+.summaryLoading { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text3); padding:8px 0 }
+.summaryContent { display:flex; flex-direction:column; gap:8px }
+.summaryText    { font-size:13px; color:var(--text); line-height:1.6; margin:0 }
+.summaryTags    { display:flex; flex-wrap:wrap; gap:6px }
+.urgTag   { font-size:11px; font-weight:700 }
+.infoTag  { font-size:11px; color:var(--text2); background:var(--bg3); padding:2px 8px; border-radius:10px }
+.accionBox { font-size:12px; color:var(--text2); background:var(--accent-dim); border:1px solid var(--accent); padding:8px 10px; border-radius:var(--radius-sm); line-height:1.5 }
+.summaryEmpty { font-size:12px; color:var(--text4); text-align:center; padding:12px 0 }
 
-/* Right panel */
-.rightPanel{display:flex;flex-direction:column;gap:10px;overflow:hidden;min-height:0}
-.workshopsCard{padding:14px;flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
-.workshopsHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0}
-.workshopsTitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-.dateInput{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:12px;padding:5px 8px;outline:none}
-.wsEmpty{font-size:12px;color:var(--text4);text-align:center;padding:16px}
-.workshopsList{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
-.workshopItem{padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .1s;display:flex;justify-content:space-between;gap:8px}
-.workshopItem:hover{border-color:var(--accent)}
-.wsSelected{border-color:var(--accent) !important;background:var(--accent-dim) !important}
-.wsInfo{flex:1;min-width:0}
-.wsName{font-size:12px;font-weight:600;color:var(--text)}
-.wsComuna{font-size:11px;color:var(--text3)}
-.wsCupos{font-size:11px;color:var(--green);font-weight:600}
-.wsNoCupos{font-size:11px;color:var(--red)}
-.wsPrices{text-align:right;flex-shrink:0}
-.wsPrice{font-size:11px;color:var(--text3)}
-.horariosSection{flex-shrink:0;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
-.horariosTitle{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px}
-.horariosGrid{display:flex;flex-wrap:wrap;gap:4px}
-.horaBtn{padding:3px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text3);font-size:11px;cursor:pointer;font-family:var(--font-mono)}
-.horaOn{background:var(--accent) !important;color:#fff !important;border-color:var(--accent) !important}
+.productsCard   { padding:14px }
+.productsHeader { margin-bottom:10px }
+.productsTitle  { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px }
+.medidaRow  { display:flex; align-items:center; gap:8px; flex-wrap:wrap }
+.medidaInput { flex:1; min-width:120px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-mono); font-size:13px; padding:7px 10px; outline:none }
+.medidaInput:focus { border-color:var(--accent) }
+.cantInput   { width:60px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-mono); font-size:13px; padding:7px 8px; outline:none; text-align:center }
+.cantLabel   { font-size:12px; color:var(--text3) }
+.productsLoading, .productsEmpty { font-size:12px; color:var(--text4); text-align:center; padding:20px }
+.tiersList  { display:flex; flex-direction:column; gap:12px }
+.tierGroup  { display:flex; flex-direction:column; gap:6px }
+.tierTitle  { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; padding:4px 0 }
+.productRow { display:flex; align-items:center; gap:8px; padding:10px; background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); cursor:pointer; transition:all .1s }
+.productRow:hover { border-color:var(--accent) }
+.productInfo  { flex:1; min-width:0 }
+.productName  { font-size:13px; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.productMedida { font-size:11px; color:var(--text3); font-family:var(--font-mono); margin-top:2px }
+.productPrices { text-align:right; flex-shrink:0 }
+.productUnit   { font-size:11px; color:var(--text3) }
+.productTotal  { font-size:13px; font-weight:700; color:var(--accent) }
+.productStock  { flex-shrink:0 }
 
-.costsCard{padding:14px;flex-shrink:0}
-.costsTitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.costsList{display:flex;flex-direction:column;gap:6px}
-.costRow{display:flex;justify-content:space-between;font-size:12px;color:var(--text2)}
-.costTotal{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--accent);padding-top:8px;border-top:1px solid var(--border);margin-top:4px}
-.costsHint{font-size:11px;color:var(--text4);margin-top:8px;font-style:italic}
+/* ── Right panel ─────────────────────────────────────────────── */
+.rightPanel { display:flex; flex-direction:column; gap:10px }
 
-.actionsCard{padding:14px;flex-shrink:0}
-.actionsTitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-.actionsList{display:flex;flex-direction:column;gap:8px}
+.locationCard  { padding:14px }
+.locationTitle { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px }
+.locationFallback { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-body); font-size:13px; padding:9px 12px; outline:none; box-sizing:border-box }
+.locationFallback:focus { border-color:var(--accent) }
+.locationFallback::placeholder { color:var(--text4) }
+.clientAddr { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text2); background:var(--accent-dim); border:1px solid var(--accent); padding:8px 10px; border-radius:var(--radius-sm); margin-top:6px; gap:8px }
+.clientAddr span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.clearAddr { background:none; border:none; color:var(--text3); cursor:pointer; font-size:14px; flex-shrink:0 }
 
-@media(max-width:1200px){.panels{grid-template-columns:1fr 1fr}}
-@media(max-width:768px){.panels{grid-template-columns:1fr;overflow-y:auto}}
-.quickAccess{display:flex;gap:10px;flex-shrink:0}
-.quickCard{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .15s}
-.quickCard:hover{border-color:var(--accent);background:var(--accent-dim)}
-.quickIcon{font-size:24px}
-.quickTitle{font-size:13px;font-weight:700;color:var(--text)}
-.quickSub{font-size:11px;color:var(--text3)}
-.tireOverlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px}
-.tireModal{background:var(--bg);border-radius:var(--radius);width:min(900px,100%);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.tireModalHeader{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
-.tireModalTitle{font-size:16px;font-weight:700;color:var(--text)}
-.tireClose{width:30px;height:30px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-.tireModalBody{flex:1;overflow:hidden;display:grid;grid-template-columns:320px 1fr;gap:0}
-.tireLeft{padding:16px;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-.tireRight{padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
-.tireDropZone{border:2px dashed var(--border2);border-radius:var(--radius);min-height:180px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;overflow:hidden}
-.tireDropZone:hover{border-color:var(--accent);background:var(--accent-dim)}
-.tireDropContent{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px;text-align:center}
-.tireDropText{font-size:13px;font-weight:600;color:var(--text2)}
-.tireDropHint{font-size:11px;color:var(--text3)}
-.tirePreview{width:100%;max-height:200px;object-fit:contain}
-.tireUploadRow{display:flex;gap:8px}
-.tireData{background:var(--bg3);border-radius:var(--radius-sm);padding:12px;display:flex;flex-direction:column;gap:8px}
-.tireMedidaBig{font-size:24px;font-weight:800;color:var(--accent);font-family:var(--font-mono);text-align:center;padding:8px;background:var(--accent-dim);border-radius:var(--radius-xs)}
-.tireDataGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.tireDataItem{display:flex;flex-direction:column;gap:1px;padding:5px 7px;background:var(--bg2);border-radius:4px}
-.tireDataItem span{font-size:10px;color:var(--text3);text-transform:uppercase}
-.tireDataItem strong{font-size:12px;color:var(--text)}
-.tireNotas{font-size:11px;color:var(--text2);font-style:italic}
-.tireConf{font-size:11px;font-weight:700;font-family:var(--font-mono);text-align:right}
-.tireEmpty{font-size:13px;color:var(--text4);text-align:center;padding:30px}
-.tireProdsHeader{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2)}
-.tireCantRow{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)}
-.tireCantInput{width:50px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;padding:4px 6px;text-align:center;outline:none}
-.tireProdsList{display:flex;flex-direction:column;gap:6px;flex:1}
-.tireTierLabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 4px}
-.tireProd{display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .1s}
-.tireProd:hover{border-color:var(--accent)}
-.tireProdSel{border-color:var(--accent) !important;background:var(--accent-dim) !important}
-.tireCheck{width:18px;height:18px;border:2px solid var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
-.tireCheckOn{background:var(--accent);border-color:var(--accent)}
-.tireProdPhoto{width:40px;height:40px;object-fit:contain;border-radius:4px;flex-shrink:0}
-.tireProdInfo{flex:1;min-width:0}
-.tireProdBrand{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase}
-.tireProdName{font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tireProdStock{font-size:11px;font-weight:600}
-.tireProdPrices{text-align:right;flex-shrink:0}
-.tireProdUnit{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
-.tireProdTotal{font-size:13px;font-weight:700;color:var(--accent);font-family:var(--font-mono)}
-.tireQuoteBar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--border);font-size:12px;color:var(--text2);flex-shrink:0}
-.locationCard{padding:12px;flex-shrink:0}
-.locationTitle{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.clientAddr{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text2);background:var(--accent-dim);padding:6px 8px;border-radius:var(--radius-sm);margin-top:6px}
-.clearAddr{background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px}
-.wsTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.wsDist{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-dim);padding:2px 6px;border-radius:8px;white-space:nowrap;flex-shrink:0}
-.locationFallback{display:none}
+.workshopsCard   { padding:14px }
+.workshopsHeader { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; gap:8px; flex-wrap:wrap }
+.workshopsTitle  { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px }
+.dateInput { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-body); font-size:12px; padding:5px 8px; outline:none }
+.wsEmpty   { font-size:12px; color:var(--text4); text-align:center; padding:16px; line-height:1.6 }
+.workshopsList { display:flex; flex-direction:column; gap:8px; max-height:400px; overflow-y:auto }
+.workshopItem { padding:12px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; transition:all .1s; display:flex; justify-content:space-between; gap:8px }
+.workshopItem:hover { border-color:var(--accent) }
+.wsSelected { border-color:var(--accent) !important; background:var(--accent-dim) !important }
+.wsInfo   { flex:1; min-width:0 }
+.wsTop    { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:3px }
+.wsName   { font-size:13px; font-weight:600; color:var(--text) }
+.wsComuna { font-size:11px; color:var(--text3); margin-top:2px }
+.wsCupos  { font-size:11px; color:var(--green); font-weight:600; margin-top:3px }
+.wsNoCupos { font-size:11px; color:var(--red); margin-top:3px }
+.wsDist   { font-size:11px; font-weight:700; color:var(--accent); background:var(--accent-dim); padding:2px 6px; border-radius:8px; white-space:nowrap; flex-shrink:0 }
+.wsPrices { text-align:right; flex-shrink:0 }
+.wsPrice  { font-size:11px; color:var(--text3); white-space:nowrap }
+
+.horariosSection { margin-top:10px; padding-top:10px; border-top:1px solid var(--border) }
+.horariosTitle   { font-size:11px; font-weight:600; color:var(--text3); margin-bottom:8px }
+.horariosGrid    { display:flex; flex-wrap:wrap; gap:4px }
+.horaBtn  { padding:4px 10px; background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text3); font-size:11px; cursor:pointer; font-family:var(--font-mono); transition:all .1s }
+.horaBtn:hover { border-color:var(--accent); color:var(--accent) }
+.horaOn   { background:var(--accent) !important; color:#fff !important; border-color:var(--accent) !important }
+
+.costsCard  { padding:14px }
+.costsTitle { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px }
+.costsList  { display:flex; flex-direction:column; gap:8px }
+.costRow    { display:flex; justify-content:space-between; font-size:13px; color:var(--text2) }
+.costTotal  { display:flex; justify-content:space-between; font-size:15px; font-weight:700; color:var(--accent); padding-top:10px; border-top:1px solid var(--border); margin-top:4px }
+.costsHint  { font-size:11px; color:var(--text4); margin-top:8px; font-style:italic; line-height:1.5 }
+
+.actionsCard  { padding:14px }
+.actionsTitle { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px }
+.actionsList  { display:flex; flex-direction:column; gap:8px }
+
+/* ── Tire Modal ──────────────────────────────────────────────── */
+.tireOverlay { position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.75); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px }
+.tireModal   { background:var(--bg); border-radius:var(--radius); width:min(900px,100%); max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.4) }
+.tireModalHeader { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border); flex-shrink:0 }
+.tireModalTitle  { font-size:16px; font-weight:700; color:var(--text) }
+.tireClose  { width:30px; height:30px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text3); cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center }
+.tireModalBody   { flex:1; overflow:hidden; display:grid; grid-template-columns:320px 1fr; gap:0 }
+.tireLeft   { padding:16px; border-right:1px solid var(--border); overflow-y:auto; display:flex; flex-direction:column; gap:12px }
+.tireRight  { padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:10px }
+.tireDropZone    { border:2px dashed var(--border2); border-radius:var(--radius); min-height:180px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; overflow:hidden }
+.tireDropZone:hover { border-color:var(--accent); background:var(--accent-dim) }
+.tireDropContent { display:flex; flex-direction:column; align-items:center; gap:8px; padding:20px; text-align:center }
+.tireDropText    { font-size:13px; font-weight:600; color:var(--text2) }
+.tireDropHint    { font-size:11px; color:var(--text3) }
+.tirePreview     { width:100%; max-height:200px; object-fit:contain }
+.tireUploadRow   { display:flex; gap:8px }
+.tireData        { background:var(--bg3); border-radius:var(--radius-sm); padding:12px; display:flex; flex-direction:column; gap:8px }
+.tireMedidaBig   { font-size:24px; font-weight:800; color:var(--accent); font-family:var(--font-mono); text-align:center; padding:8px; background:var(--accent-dim); border-radius:var(--radius-xs) }
+.tireDataGrid    { display:grid; grid-template-columns:1fr 1fr; gap:4px }
+.tireDataItem    { display:flex; flex-direction:column; gap:1px; padding:5px 7px; background:var(--bg2); border-radius:4px }
+.tireDataItem span   { font-size:10px; color:var(--text3); text-transform:uppercase }
+.tireDataItem strong { font-size:12px; color:var(--text) }
+.tireNotas  { font-size:11px; color:var(--text2); font-style:italic }
+.tireConf   { font-size:11px; font-weight:700; font-family:var(--font-mono); text-align:right }
+.tireEmpty  { font-size:13px; color:var(--text4); text-align:center; padding:30px }
+.tireProdsHeader { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text2) }
+.tireCantRow     { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text3) }
+.tireCantInput   { width:50px; background:var(--bg3); border:1px solid var(--border); border-radius:4px; color:var(--text); font-size:12px; padding:4px 6px; text-align:center; outline:none }
+.tireProdsList   { display:flex; flex-direction:column; gap:6px }
+.tireTierLabel   { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin:6px 0 4px }
+.tireProd    { display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); cursor:pointer; transition:all .1s }
+.tireProd:hover  { border-color:var(--accent) }
+.tireProdSel     { border-color:var(--accent) !important; background:var(--accent-dim) !important }
+.tireCheck   { width:18px; height:18px; border:2px solid var(--border2); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; flex-shrink:0 }
+.tireCheckOn { background:var(--accent); border-color:var(--accent) }
+.tireProdPhoto   { width:40px; height:40px; object-fit:contain; border-radius:4px; flex-shrink:0 }
+.tireProdInfo    { flex:1; min-width:0 }
+.tireProdBrand   { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase }
+.tireProdName    { font-size:12px; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.tireProdStock   { font-size:11px; font-weight:600 }
+.tireProdPrices  { text-align:right; flex-shrink:0 }
+.tireProdUnit    { font-size:11px; color:var(--text3); font-family:var(--font-mono) }
+.tireProdTotal   { font-size:13px; font-weight:700; color:var(--accent); font-family:var(--font-mono) }
+.tireQuoteBar    { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--bg3); border-radius:var(--radius-sm); border:1px solid var(--border); font-size:12px; color:var(--text2); flex-shrink:0 }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width:1200px) {
+  .panels { grid-template-columns: 260px 1fr 260px }
+}
+@media (max-width:960px) {
+  .panels { grid-template-columns: 1fr 1fr; align-items:start }
+  .rightPanel { grid-column: 1 / -1 }
+}
+@media (max-width:640px) {
+  .panels { grid-template-columns: 1fr }
+  .content { padding:12px }
+  .tireModalBody { grid-template-columns: 1fr }
+  .tireLeft { border-right:none; border-bottom:1px solid var(--border) }
+}
