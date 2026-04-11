@@ -1,0 +1,45 @@
+.page{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.loading{display:flex;align-items:center;justify-content:center;padding:60px}
+
+.controlsCard{padding:18px}
+.controlsTitle{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px}
+.controlsRow{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.controlField{display:flex;flex-direction:column;gap:5px;flex:1;min-width:180px}
+.controlField label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.select{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:8px 10px;outline:none;width:100%}
+.caseRow{display:flex;gap:8px;align-items:center}
+
+.summaryBar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.3);border-radius:var(--radius);gap:12px;flex-wrap:wrap}
+.summaryText{font-size:13px;color:var(--text2)}
+.summaryText strong{color:var(--yellow)}
+
+.duplicatesList{display:flex;flex-direction:column;gap:12px}
+.dupCard{padding:14px}
+.dupHeader{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+.dupInfo{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dupCount{font-size:12px;font-weight:700;color:var(--red);background:var(--red-bg);padding:2px 8px;border-radius:10px}
+.dupProducts{font-size:12px;color:var(--text3)}
+.dupBrands{font-size:11px;color:var(--text3);font-style:italic}
+
+.dupVariants{display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--bg3);border-radius:var(--radius-sm);margin-bottom:10px}
+.dupVariant{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .1s}
+.dupVariant:hover{background:var(--bg4)}
+.dupCanonical{background:var(--accent-dim) !important}
+.dupValue{font-size:13px;color:var(--text);flex:1;font-family:var(--font-mono)}
+.canonicalBadge{font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-dim);padding:2px 8px;border-radius:10px}
+.suggestBadge{font-size:11px;color:var(--text4);padding:2px 8px}
+
+.dupFooter{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text4);flex-wrap:wrap;gap:6px}
+.dupNorm code{font-family:var(--font-mono);background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--text3)}
+.dupHint{font-style:italic}
+.brandHeader{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:var(--radius);flex-wrap:wrap}
+.brandName{font-size:14px;font-weight:700;color:var(--accent)}
+.brandField{font-size:12px;color:var(--text3)}
+.viewToggle{display:flex;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;width:fit-content}
+.viewBtn{padding:7px 16px;background:none;border:none;color:var(--text3);font-size:13px;font-family:var(--font-body);cursor:pointer;transition:all .15s}
+.viewBtn:hover{color:var(--text2);background:var(--bg4)}
+.viewBtnActive{background:var(--accent);color:#fff !important;font-weight:600}
+.brandSection{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.brandSectionTitle{font-size:13px;font-weight:700;color:var(--text);padding:8px 12px;background:var(--bg3);border-radius:var(--radius-sm);border-left:3px solid var(--accent);display:flex;align-items:center;gap:8px}
+.brandSectionCount{font-size:11px;font-weight:400;color:var(--text3)}

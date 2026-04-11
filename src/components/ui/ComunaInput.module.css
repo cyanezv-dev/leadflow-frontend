@@ -1,0 +1,9 @@
+.wrap{position:relative;width:100%}
+.input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:8px 10px;outline:none;transition:border-color .15s;width:100%;box-sizing:border-box}
+.input:focus{border-color:var(--accent)}
+.drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);box-shadow:var(--shadow);z-index:9999;max-height:220px;overflow-y:auto}
+.item{padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:2px;transition:background .1s}
+.item:hover{background:var(--bg3)}
+.item:last-child{border-bottom:none}
+.comuna{font-size:13px;font-weight:600;color:var(--text)}
+.region{font-size:11px;color:var(--text3)}

@@ -1,0 +1,69 @@
+.page{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.pageTitle{margin-bottom:4px}
+.title{font-size:20px;font-weight:700;color:var(--text);margin:0}
+.subtitle{font-size:13px;color:var(--text3);margin-top:4px}
+
+.layout{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+
+/* Upload */
+.uploadCard{padding:16px;display:flex;flex-direction:column;gap:12px}
+.dropZone{border:2px dashed var(--border2);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .15s;min-height:240px;display:flex;align-items:center;justify-content:center}
+.dropZone:hover{border-color:var(--accent);background:var(--accent-dim)}
+.dropContent{display:flex;flex-direction:column;align-items:center;gap:10px;padding:30px}
+.dropIcon{font-size:48px}
+.dropText{font-size:14px;font-weight:600;color:var(--text2)}
+.dropHint{font-size:12px;color:var(--text3);text-align:center}
+.preview{width:100%;max-height:320px;object-fit:contain}
+.uploadActions{display:flex;gap:8px}
+
+/* Tire info */
+.tireInfoCard{padding:16px}
+.tireInfoTitle{font-size:13px;font-weight:700;color:var(--text2);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.confidence{font-size:12px;font-weight:700;font-family:var(--font-mono)}
+.tireGrid{display:flex;flex-direction:column;gap:10px}
+.tireMedida{font-size:28px;font-weight:800;color:var(--accent);font-family:var(--font-mono);text-align:center;padding:12px;background:var(--accent-dim);border-radius:var(--radius-sm)}
+.tireFields{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.tireField{display:flex;flex-direction:column;gap:2px;padding:6px 8px;background:var(--bg3);border-radius:var(--radius-xs)}
+.tireField span{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px}
+.tireField strong{font-size:13px;color:var(--text)}
+.tireNotas{font-size:12px;color:var(--text2);background:var(--bg3);padding:8px 10px;border-radius:var(--radius-sm);font-style:italic}
+
+/* Products */
+.rightCol{display:flex;flex-direction:column;gap:12px}
+.emptyProducts{padding:40px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.emptyIcon{font-size:40px}
+.emptyText{font-size:14px;font-weight:600;color:var(--text2);text-align:center}
+.emptySub{font-size:12px;color:var(--text3);text-align:center}
+
+.productsHeader{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.productsTitle{font-size:13px;color:var(--text2)}
+.cantRow{display:flex;align-items:center;gap:8px}
+.cantLabel{font-size:12px;color:var(--text3)}
+.cantInput{width:60px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-mono);font-size:13px;padding:6px 8px;outline:none;text-align:center}
+
+.productsList{display:flex;flex-direction:column;gap:14px}
+.tierSection{display:flex;flex-direction:column;gap:8px}
+.tierHeader{display:flex;align-items:center;gap:10px;padding-left:10px;border-left:3px solid}
+.tierName{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.tierCount{font-size:11px;color:var(--text3)}
+
+.productCard{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .15s}
+.productCard:hover{border-color:var(--border3)}
+.productSelected{border-color:var(--accent) !important;background:var(--accent-dim) !important}
+.checkBox{width:20px;height:20px;border:2px solid var(--border2);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;transition:all .15s}
+.checkOn{background:var(--accent);border-color:var(--accent)}
+.productPhoto{width:56px;height:56px;object-fit:contain;border-radius:var(--radius-sm);border:1px solid var(--border);flex-shrink:0}
+.productInfo{flex:1;min-width:0}
+.productBrand{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.productName{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.productMedida{font-size:12px;color:var(--accent);font-family:var(--font-mono)}
+.productModelo{font-size:11px;color:var(--text3)}
+.productPricing{text-align:right;flex-shrink:0}
+.productUnit{font-size:12px;color:var(--text2);font-family:var(--font-mono)}
+.productUnit span{font-size:10px;color:var(--text3)}
+.productTotal{font-size:15px;font-weight:700;color:var(--accent);font-family:var(--font-mono)}
+.productStock{font-size:11px;font-weight:600;margin-top:2px}
+
+/* Quote footer */
+.quoteFooter{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;position:sticky;bottom:0;background:var(--bg2)}

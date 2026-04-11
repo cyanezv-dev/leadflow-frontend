@@ -1,0 +1,70 @@
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --bg:         #f0f2f5;
+  --bg2:        #ffffff;
+  --bg3:        #f5f6f8;
+  --bg4:        #eceef2;
+  --bg5:        #e4e7ec;
+  --border:     #e2e5eb;
+  --border2:    #d0d5dd;
+  --border3:    #b8bfcc;
+
+  --text:       #111827;
+  --text2:      #374151;
+  --text3:      #6b7280;
+  --text4:      #9ca3af;
+
+  --accent:     #2563eb;
+  --accent2:    #1d4ed8;
+  --accent-dim: rgba(37,99,235,0.08);
+  --accent-glow:rgba(37,99,235,0.18);
+
+  --green:      #059669;
+  --green-bg:   rgba(5,150,105,0.08);
+  --blue:       #2563eb;
+  --blue-bg:    rgba(37,99,235,0.08);
+  --purple:     #7c3aed;
+  --purple-bg:  rgba(124,58,237,0.08);
+  --orange:     #d97706;
+  --orange-bg:  rgba(217,119,6,0.08);
+  --red:        #dc2626;
+  --red-bg:     rgba(220,38,38,0.08);
+  --yellow:     #d97706;
+  --yellow-bg:  rgba(217,119,6,0.08);
+  --pink:       #db2777;
+  --pink-bg:    rgba(219,39,119,0.08);
+  --teal:       #0d9488;
+  --teal-bg:    rgba(13,148,136,0.08);
+
+  --font-display:'Syne',sans-serif;
+  --font-body:   'DM Sans',sans-serif;
+  --font-mono:   'DM Mono',monospace;
+
+  --sidebar-w:   240px;
+  --sidebar-mini:64px;
+  --header-h:    56px;
+  --radius:      12px;
+  --radius-sm:   8px;
+  --radius-xs:   5px;
+  --shadow:      0 4px 24px rgba(0,0,0,0.08);
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.06);
+}
+
+html,body,#root{height:100%;overflow:hidden}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+::-webkit-scrollbar-thumb:hover{background:var(--border3)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.animate-in{animation:fadeIn 0.2s ease forwards}
+
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-w: 0px;
+    --header-h: 52px;
+  }
+}

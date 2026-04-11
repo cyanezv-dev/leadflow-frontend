@@ -1,0 +1,259 @@
+.page { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.loading { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text3); }
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  padding: 20px 28px;
+}
+
+/* Sidebar */
+.sidebar { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+
+.profileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.leadName {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 12px;
+  color: var(--text);
+}
+.company { font-size: 12px; color: var(--text3); margin-top: 3px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.contacts { display: flex; flex-direction: column; gap: 8px; width: 100%; padding-top: 12px; border-top: 1px solid var(--border); }
+.contact { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+.contact span { font-size: 14px; }
+
+.valueBlock { width: 100%; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px; }
+.valueLabel { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text3); margin-bottom: 4px; }
+.valueAmount { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--accent2); }
+
+.notesBlock { width: 100%; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px; }
+.notesText { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+.actionsCard { display: flex; flex-direction: column; gap: 14px; }
+
+/* Right */
+.main { display: flex; flex-direction: column; overflow: hidden; }
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text3);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+}
+.tab:hover { color: var(--text2); }
+.tabActive { color: var(--accent2); border-bottom-color: var(--accent); }
+.tabCount {
+  background: var(--bg4);
+  color: var(--text3);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.tabContent { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+
+/* Note form */
+.noteForm { display: flex; gap: 8px; align-items: flex-end; }
+.noteInput {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 72px;
+  transition: border-color 0.15s;
+}
+.noteInput:focus { border-color: var(--accent); }
+.noteInput::placeholder { color: var(--text4); }
+
+/* Activity */
+.activityList { display: flex; flex-direction: column; }
+.activityItem { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.activityItem:last-child { border-bottom: none; }
+.activityIcon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+.activityBody { flex: 1; min-width: 0; }
+.activityMeta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+.activityType { font-size: 12px; font-weight: 600; color: var(--text2); }
+.activityTime { font-size: 11px; color: var(--text3); margin-left: auto; font-family: var(--font-mono); }
+.activityContent { font-size: 13px; color: var(--text); line-height: 1.5; }
+
+/* Tasks */
+.addRow { display: flex; gap: 8px; }
+.addInput {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 7px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.addInput:focus { border-color: var(--accent); }
+.addInput::placeholder { color: var(--text4); }
+
+.taskItem { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.taskItem:last-child { border-bottom: none; }
+.taskCheck {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border2);
+  border-radius: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.15s;
+  color: #fff;
+}
+.taskDone { background: var(--green); border-color: var(--green); }
+.taskDoneText { text-decoration: line-through; color: var(--text3); }
+
+/* Appointments */
+.sectionHeader { display: flex; justify-content: flex-end; }
+.apptForm { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.apptItem { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.apptItem:last-child { border-bottom: none; }
+.apptDate { font-size: 13px; font-weight: 600; color: var(--text); }
+.apptMeta { font-size: 11px; color: var(--text3); }
+
+/* Notes */
+.noteItem { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.noteItem:last-child { border-bottom: none; }
+.noteText { font-size: 13px; color: var(--text); line-height: 1.5; }
+.noteTime { font-size: 11px; color: var(--text3); margin-top: 4px; }
+@media (max-width: 900px) {
+  .content { grid-template-columns:1fr; overflow-y:auto; }
+  .sidebar { overflow:visible; }
+  .main    { overflow:visible; }
+}
+@media (max-width: 640px) {
+  .content { padding:14px 16px; }
+  .tabs    { overflow-x:auto; }
+  .tab     { padding:10px 12px; font-size:12px; white-space:nowrap; }
+}
+
+/* Cotizaciones inline */
+.quoteForm{display:flex;flex-direction:column;gap:12px;padding:14px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:14px}
+.qformRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.qfield{display:flex;flex-direction:column;gap:4px}
+.qlabel{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.qinput{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:7px 10px;outline:none;width:100%;transition:border-color .15s}
+.qinput:focus{border-color:var(--accent)}
+.qTable{width:100%;border-collapse:collapse;margin-top:4px}
+.qTable th{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;padding:7px 8px;border-bottom:1px solid var(--border);text-align:left}
+.qTable td{padding:5px 6px;border-bottom:1px solid var(--border)}
+.qTable tbody tr:last-child td{border-bottom:none}
+.tcell{background:transparent;border:1px solid transparent;border-radius:4px;color:var(--text);font-family:var(--font-body);font-size:12px;padding:4px 6px;outline:none;width:100%;transition:border-color .15s}
+.tcell:focus{border-color:var(--accent);background:var(--bg2)}
+.tcellR{text-align:right;font-family:var(--font-mono)}
+.tsub{font-family:var(--font-mono);font-size:12px;color:var(--text2);text-align:right;padding-right:8px}
+.tdel{width:22px;height:22px;background:var(--red-bg);border:none;border-radius:3px;color:var(--red);cursor:pointer;font-size:13px}
+.addRow{width:100%;padding:7px;background:none;border:none;border-top:1px solid var(--border);color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all .15s;text-align:center}
+.addRow:hover{background:var(--bg2);color:var(--accent)}
+.qtotals{display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding:10px 0;border-top:1px solid var(--border)}
+.qtrow{display:flex;gap:24px;font-size:13px;color:var(--text2)}
+.qtrow span:last-child{font-family:var(--font-mono);min-width:100px;text-align:right}
+.qtfinal{font-size:14px;font-weight:700;color:var(--accent);border-top:1px solid var(--border);padding-top:8px;margin-top:4px}
+.qactions{display:flex;justify-content:flex-end;gap:8px}
+
+.quoteList{display:flex;flex-direction:column;gap:10px}
+.quoteCard{padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.quoteCard:hover{border-color:var(--accent);background:var(--bg2)}
+.quoteCardTop{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.quoteNum{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent)}
+.quoteSt{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.quoteCardBot{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.quoteDate{font-size:11px;color:var(--text3)}
+.quoteTotal{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text)}
+.quoteBreak{display:flex;gap:16px;font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+
+/* Órdenes */
+.orderCard {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.orderCard:last-child { margin-bottom: 0; }
+.orderHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.orderNum {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.orderStatus {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--green-bg);
+  color: var(--green);
+  text-transform: capitalize;
+}
+.orderDate {
+  font-size: 11px;
+  color: var(--text3);
+  margin-left: auto;
+  font-family: var(--font-mono);
+}
+.orderGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.orderField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+}
+.orderField span { color: var(--text3); }
+.orderField strong { color: var(--text); font-size: 13px; }
+.orderTotal { color: var(--accent) !important; font-size: 15px !important; }

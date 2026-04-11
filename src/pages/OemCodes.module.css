@@ -1,0 +1,41 @@
+.page{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.loading{display:flex;align-items:center;justify-content:center;padding:60px}
+.pageTitle{margin-bottom:4px}
+.title{font-size:20px;font-weight:700;color:var(--text);margin:0}
+.subtitle{font-size:13px;color:var(--text3);margin-top:4px}
+
+.brandsGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.brandCard{padding:0;overflow:hidden}
+.brandHeader{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.brandLogo{height:32px;object-fit:contain}
+.brandLogoPlaceholder{font-size:24px}
+.brandName{font-size:15px;font-weight:700;color:var(--text);flex:1}
+.brandCount{font-size:11px;color:var(--text3);background:var(--bg4);padding:2px 8px;border-radius:10px}
+
+.codesList{display:flex;flex-direction:column}
+.codeRow{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;gap:10px}
+.codeRow:last-child{border-bottom:none}
+.codeRow:hover{background:var(--bg3)}
+.codeLeft{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.codeBadge{font-size:12px;font-weight:800;color:#fff;background:var(--accent);padding:3px 8px;border-radius:6px;font-family:var(--font-mono);white-space:nowrap;flex-shrink:0}
+.codeName{font-size:13px;font-weight:600;color:var(--text)}
+.codeDesc{font-size:11px;color:var(--text3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.codeActions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.codeLogoSmall{height:20px;object-fit:contain}
+.noLogo{font-size:10px;color:var(--text4)}
+.editBtn{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);padding:3px 7px;cursor:pointer;font-size:11px;color:var(--text3)}
+
+/* Modal */
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.formField{display:flex;flex-direction:column;gap:5px}
+.formField label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.codeDisplay{font-size:20px;font-weight:800;color:var(--accent);font-family:var(--font-mono);padding:8px 12px;background:var(--accent-dim);border-radius:var(--radius-sm)}
+.input{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:8px 10px;outline:none;transition:border-color .15s;width:100%}
+.input:focus{border-color:var(--accent)}
+.textarea{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:var(--font-body);font-size:13px;padding:8px 10px;outline:none;resize:vertical;width:100%}
+.logoRow{display:flex;align-items:center;gap:12px}
+.logoPreview{height:48px;object-fit:contain;border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px;background:#fff}
+.logoActions{display:flex;flex-direction:column;gap:6px;flex:1}
+.uploadBtn{display:inline-flex;align-items:center;padding:6px 12px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:var(--radius-sm);color:var(--accent);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body);width:fit-content}
+.modalFooter{display:flex;justify-content:flex-end;gap:8px;padding-top:14px;border-top:1px solid var(--border);margin-top:8px}
