@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Header from '@/components/layout/Header'
 import { Button, Card, Spinner, Toast } from '@/components/ui'
@@ -53,32 +53,60 @@ function ScrapingStatus({ scrapedAt }) {
   return <span className={`${styles.scrapedAt} ${fresh ? styles.fresh : styles.stale}`}>{label}</span>
 }
 
-// Componente de dropdown con búsqueda interna
-function FilterSelect({ label, options, value, onChange, placeholder }) {
+// Componente de dropdown con búsqueda interna y posición fixed (evita clipping por overflow)
+function FilterSelect({ label, options, value, onChange, placeholder, displayFn }) {
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
-  const ref = useRef()
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 })
+  const btnRef = useRef()
+  const dropRef = useRef()
 
-  const filtered = options.filter(o => o.toLowerCase().includes(q.toLowerCase()))
+  const display = displayFn || (v => v)
+  const filtered = options.filter(o => display(o).toLowerCase().includes(q.toLowerCase()))
 
   const handleSelect = (val) => { onChange(val); setOpen(false); setQ('') }
 
+  const handleOpen = () => {
+    if (open) { setOpen(false); return }
+    const rect = btnRef.current.getBoundingClientRect()
+    setPos({ top: rect.bottom + 4, left: rect.left, width: Math.max(rect.width, 200) })
+    setOpen(true)
+  }
+
+  // Cerrar al hacer click fuera
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => {
+      if (!btnRef.current?.contains(e.target) && !dropRef.current?.contains(e.target)) {
+        setOpen(false)
+        setQ('')
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
   return (
-    <div className={styles.filterWrap} ref={ref}>
+    <div className={styles.filterWrap}>
       <button
+        ref={btnRef}
         className={`${styles.filterBtn} ${value ? styles.filterBtnActive : ''}`}
-        onClick={() => setOpen(v => !v)}
+        onClick={handleOpen}
         type="button"
       >
         <span className={styles.filterLabel}>{label}</span>
         {value
-          ? <span className={styles.filterValue}>{value} <span className={styles.filterClear} onMouseDown={e => { e.stopPropagation(); onChange('') }}>✕</span></span>
+          ? <span className={styles.filterValue}>{display(value)} <span className={styles.filterClear} onMouseDown={e => { e.stopPropagation(); onChange('') }}>✕</span></span>
           : <span className={styles.filterPlaceholder}>{placeholder}</span>
         }
         <span className={styles.filterArrow}>{open ? '▴' : '▾'}</span>
       </button>
       {open && (
-        <div className={styles.filterDrop}>
+        <div
+          ref={dropRef}
+          className={styles.filterDrop}
+          style={{ position: 'fixed', top: pos.top, left: pos.left, width: pos.width, zIndex: 99999 }}
+        >
           <input
             className={styles.filterSearch}
             placeholder={`Buscar ${label.toLowerCase()}...`}
@@ -88,7 +116,7 @@ function FilterSelect({ label, options, value, onChange, placeholder }) {
           />
           <div className={styles.filterOptions}>
             <div className={styles.filterOption} onMouseDown={() => handleSelect('')}>
-              <em>Todas</em>
+              <em>Todos</em>
             </div>
             {filtered.slice(0, 80).map(o => (
               <div
@@ -96,7 +124,7 @@ function FilterSelect({ label, options, value, onChange, placeholder }) {
                 className={`${styles.filterOption} ${value === o ? styles.filterOptionActive : ''}`}
                 onMouseDown={() => handleSelect(o)}
               >
-                {o}
+                {display(o)}
               </div>
             ))}
             {filtered.length > 80 && (
@@ -230,6 +258,7 @@ export default function CompetitorPrices() {
             value={aroFilter}
             onChange={handleFilterChange(setAroFilter)}
             placeholder="Todos los aros"
+            displayFn={v => `R${v}`}
           />
 
           {hasFilters && (
