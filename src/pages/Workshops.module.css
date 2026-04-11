@@ -90,4 +90,17 @@
 .precioEmpty{text-align:center;color:var(--text4);font-size:12px;padding:12px}
 .addPrecioRow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
+.deleteBtn{background:transparent;border:none;cursor:pointer;font-size:16px;opacity:.5;padding:2px 4px;border-radius:6px;transition:all .15s;flex-shrink:0}
+.deleteBtn:hover{opacity:1;background:rgba(248,113,113,0.15)}
+
+.confirmOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;display:flex;align-items:center;justify-content:center}
+.confirmBox{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;width:380px;max-width:90vw;text-align:center;display:flex;flex-direction:column;gap:12px}
+.confirmIcon{font-size:36px}
+.confirmTitle{font-size:18px;font-weight:700;color:var(--text)}
+.confirmMsg{font-size:13px;color:var(--text3);line-height:1.5}
+.confirmActions{display:flex;gap:10px;margin-top:6px}
+.confirmCancel{flex:1;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:14px;cursor:pointer;font-family:var(--font-body)}
+.confirmDel{flex:1;padding:10px;background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);border-radius:var(--radius-sm);color:#f87171;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body)}
+.confirmDel:hover{background:rgba(248,113,113,0.25)}
+
 @media(max-width:768px){.content{padding:14px 16px}.statsRow{grid-template-columns:repeat(3,1fr)}.formModal{width:100%}.formGrid{grid-template-columns:1fr}.horariosGrid{grid-template-columns:1fr}}

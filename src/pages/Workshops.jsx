@@ -482,7 +482,24 @@ export default function Workshops() {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing]   = useState(null)
   const [toast, setToast]       = useState('')
+  const [confirmDelete, setConfirmDelete] = useState(null)
   const showToast = msg => { setToast(msg); setTimeout(()=>setToast(''),3000) }
+
+  const handleDelete = async (e, w) => {
+    e.stopPropagation()
+    setConfirmDelete(w)
+  }
+
+  const confirmDeleteTaller = async () => {
+    try {
+      await api.delete(`/workshops/${confirmDelete.id}`)
+      setConfirmDelete(null)
+      refetch()
+      showToast('✓ Taller eliminado')
+    } catch(e) {
+      showToast('Error: ' + e.message)
+    }
+  }
 
   const { data: workshops=[], isLoading, refetch } = useQuery({
     queryKey: ['workshops', search],
@@ -514,7 +531,10 @@ export default function Workshops() {
                     <div className={styles.cardName}>{w.nombre_comercial}</div>
                     {w.razon_social && w.razon_social!==w.nombre_comercial && <div className={styles.cardRazon}>{w.razon_social}</div>}
                   </div>
-                  {w.instala_runflat && <span className={styles.runflatTag}>Runflat</span>}
+                  <div style={{display:'flex',alignItems:'center',gap:8}}>
+                    {w.instala_runflat && <span className={styles.runflatTag}>Runflat</span>}
+                    <button className={styles.deleteBtn} onClick={(e)=>handleDelete(e,w)} title="Eliminar taller">🗑️</button>
+                  </div>
                 </div>
                 {w.comuna && <div className={styles.cardComuna}>📍 {w.comuna}</div>}
                 <div className={styles.cardStats}>
@@ -536,6 +556,20 @@ export default function Workshops() {
       {showForm && <WorkshopForm onClose={()=>setShowForm(false)} onSaved={()=>{refetch();showToast('✓ Taller creado')}}/>}
       {editing  && <WorkshopForm workshop={editing} onClose={()=>setEditing(null)} onSaved={()=>{refetch();showToast('✓ Taller actualizado')}}/>}
       {toast && <Toast message={toast} onClose={()=>setToast('')}/>}
+
+      {confirmDelete && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.confirmBox}>
+            <div className={styles.confirmIcon}>🗑️</div>
+            <div className={styles.confirmTitle}>¿Eliminar taller?</div>
+            <div className={styles.confirmMsg}>Se eliminará <strong>{confirmDelete.nombre_comercial}</strong> y todos sus datos. Esta acción no se puede deshacer.</div>
+            <div className={styles.confirmActions}>
+              <button className={styles.confirmCancel} onClick={()=>setConfirmDelete(null)}>Cancelar</button>
+              <button className={styles.confirmDel} onClick={confirmDeleteTaller}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
