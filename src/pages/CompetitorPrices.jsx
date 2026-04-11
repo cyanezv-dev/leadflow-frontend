@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState, useCallback, useRef } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Header from '@/components/layout/Header'
 import { Button, Card, Spinner, Toast } from '@/components/ui'
 import { fmt } from '@/utils/format'
@@ -53,30 +53,107 @@ function ScrapingStatus({ scrapedAt }) {
   return <span className={`${styles.scrapedAt} ${fresh ? styles.fresh : styles.stale}`}>{label}</span>
 }
 
+// Componente de dropdown con búsqueda interna
+function FilterSelect({ label, options, value, onChange, placeholder }) {
+  const [open, setOpen] = useState(false)
+  const [q, setQ] = useState('')
+  const ref = useRef()
+
+  const filtered = options.filter(o => o.toLowerCase().includes(q.toLowerCase()))
+
+  const handleSelect = (val) => { onChange(val); setOpen(false); setQ('') }
+
+  return (
+    <div className={styles.filterWrap} ref={ref}>
+      <button
+        className={`${styles.filterBtn} ${value ? styles.filterBtnActive : ''}`}
+        onClick={() => setOpen(v => !v)}
+        type="button"
+      >
+        <span className={styles.filterLabel}>{label}</span>
+        {value
+          ? <span className={styles.filterValue}>{value} <span className={styles.filterClear} onMouseDown={e => { e.stopPropagation(); onChange('') }}>✕</span></span>
+          : <span className={styles.filterPlaceholder}>{placeholder}</span>
+        }
+        <span className={styles.filterArrow}>{open ? '▴' : '▾'}</span>
+      </button>
+      {open && (
+        <div className={styles.filterDrop}>
+          <input
+            className={styles.filterSearch}
+            placeholder={`Buscar ${label.toLowerCase()}...`}
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            autoFocus
+          />
+          <div className={styles.filterOptions}>
+            <div className={styles.filterOption} onMouseDown={() => handleSelect('')}>
+              <em>Todas</em>
+            </div>
+            {filtered.slice(0, 80).map(o => (
+              <div
+                key={o}
+                className={`${styles.filterOption} ${value === o ? styles.filterOptionActive : ''}`}
+                onMouseDown={() => handleSelect(o)}
+              >
+                {o}
+              </div>
+            ))}
+            {filtered.length > 80 && (
+              <div className={styles.filterMore}>+{filtered.length - 80} más — escribe para filtrar</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CompetitorPrices() {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [searchInput, setSearchInput] = useState('')
+  const [brandFilter, setBrandFilter] = useState('')
+  const [medidaFilter, setMedidaFilter] = useState('')
+  const [aroFilter, setAroFilter] = useState('')
   const [page, setPage] = useState(1)
   const [scrapingId, setScrapingId] = useState(null)
   const [toast, setToast] = useState('')
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 4000) }
   const LIMIT = 25
 
+  // Load filter options
+  const { data: filterOptions = {} } = useQuery({
+    queryKey: ['competitor-price-filters'],
+    queryFn: () => api.get('/competitor-prices/filters'),
+    staleTime: 300000,
+  })
+  const { brands = [], medidas = [], aros = [] } = filterOptions
+
   const { data = {}, isLoading } = useQuery({
-    queryKey: ['competitor-prices', search, page],
-    queryFn: () => api.get(`/competitor-prices?search=${encodeURIComponent(search)}&page=${page}&limit=${LIMIT}`),
+    queryKey: ['competitor-prices', search, brandFilter, medidaFilter, aroFilter, page],
+    queryFn: () => api.get(
+      `/competitor-prices?search=${encodeURIComponent(search)}&brand=${encodeURIComponent(brandFilter)}&medida=${encodeURIComponent(medidaFilter)}&aro=${encodeURIComponent(aroFilter)}&page=${page}&limit=${LIMIT}`
+    ),
     keepPreviousData: true,
   })
 
   const { products = [], total = 0, competitors = COMPETITORS } = data
   const totalPages = Math.ceil(total / LIMIT)
 
+  const hasFilters = search || brandFilter || medidaFilter || aroFilter
+
+  const clearAll = () => {
+    setSearch(''); setSearchInput(''); setBrandFilter(''); setMedidaFilter(''); setAroFilter(''); setPage(1)
+  }
+
   const handleSearch = useCallback((e) => {
     e.preventDefault()
     setSearch(searchInput)
     setPage(1)
   }, [searchInput])
+
+  const handleFilterChange = (setter) => (val) => { setter(val); setPage(1) }
 
   const scrapeOne = async (productId) => {
     setScrapingId(productId)
@@ -125,18 +202,40 @@ export default function CompetitorPrices() {
               <span className={styles.searchIcon}>🔍</span>
               <input
                 className={styles.searchInput}
-                placeholder="Buscar por nombre, marca o medida..."
+                placeholder="Buscar producto..."
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
               />
             </div>
             <Button type="submit">Buscar</Button>
-            {search && (
-              <Button variant="ghost" onClick={() => { setSearch(''); setSearchInput(''); setPage(1) }}>
-                Limpiar
-              </Button>
-            )}
           </form>
+
+          <FilterSelect
+            label="Marca"
+            options={brands}
+            value={brandFilter}
+            onChange={handleFilterChange(setBrandFilter)}
+            placeholder="Todas las marcas"
+          />
+          <FilterSelect
+            label="Medida"
+            options={medidas}
+            value={medidaFilter}
+            onChange={handleFilterChange(setMedidaFilter)}
+            placeholder="Todas las medidas"
+          />
+          <FilterSelect
+            label="Aro"
+            options={aros.map(String)}
+            value={aroFilter}
+            onChange={handleFilterChange(setAroFilter)}
+            placeholder="Todos los aros"
+          />
+
+          {hasFilters && (
+            <Button variant="ghost" size="sm" onClick={clearAll}>✕ Limpiar filtros</Button>
+          )}
+
           <div className={styles.toolbarRight}>
             <span className={styles.totalCount}>{total.toLocaleString()} productos</span>
             <Button variant="ghost" size="sm" onClick={scrapeVisible} loading={batchScraping} disabled={!products.length}>
@@ -157,7 +256,13 @@ export default function CompetitorPrices() {
           {isLoading ? (
             <div className={styles.loading}><Spinner /> Cargando productos...</div>
           ) : products.length === 0 ? (
-            <div className={styles.empty}>No se encontraron productos{search ? ` para "${search}"` : ''}</div>
+            <div className={styles.empty}>
+              No se encontraron productos
+              {search ? ` para "${search}"` : ''}
+              {brandFilter ? ` · marca: ${brandFilter}` : ''}
+              {medidaFilter ? ` · medida: ${medidaFilter}` : ''}
+              {aroFilter ? ` · aro: R${aroFilter}` : ''}
+            </div>
           ) : (
             <div className={styles.tableWrap}>
               <table className={styles.table}>
