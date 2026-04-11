@@ -117,9 +117,16 @@
 
 .locationCard  { padding:14px }
 .locationTitle { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:10px }
+.locationInput { width:100%; background:var(--bg3); border:1.5px solid var(--accent); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-body); font-size:13px; padding:9px 12px 9px 34px; outline:none; box-sizing:border-box }
+.locationInput:focus { border-color:var(--accent) }
+.locationInput::placeholder { color:var(--text4) }
 .locationFallback { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-body); font-size:13px; padding:9px 12px; outline:none; box-sizing:border-box }
 .locationFallback:focus { border-color:var(--accent) }
 .locationFallback::placeholder { color:var(--text4) }
+.addrDrop { position:absolute; top:calc(100% + 2px); left:0; right:0; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:0 4px 16px rgba(0,0,0,.25); z-index:9999; overflow:hidden }
+.addrItem { padding:9px 12px; font-size:12px; color:var(--text2); cursor:pointer; border-bottom:1px solid var(--border); transition:background .12s }
+.addrItem:last-child { border-bottom:none }
+.addrItem:hover { background:var(--bg3); color:var(--text) }
 .clientAddr { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text2); background:var(--accent-dim); border:1px solid var(--accent); padding:8px 10px; border-radius:var(--radius-sm); margin-top:6px; gap:8px }
 .clientAddr span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
 .clearAddr { background:none; border:none; color:var(--text3); cursor:pointer; font-size:14px; flex-shrink:0 }

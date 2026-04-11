@@ -393,104 +393,66 @@ function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, c
   const [selectedHora, setSelectedHora] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [toast, setToast] = useState('')
-  const [placesReset, setPlacesReset] = useState(0)
+  const [addrQuery, setAddrQuery] = useState('')
+  const [addrSuggestions, setAddrSuggestions] = useState([])
+  const [addrLoading, setAddrLoading] = useState(false)
+  const [addrOpen, setAddrOpen] = useState(false)
+  const addrTimer = useRef(null)
   const showToast = msg => { setToast(msg); setTimeout(()=>setToast(''),3000) }
 
-  // Google Places for client location
-  useEffect(() => {
-    let destroyed = false
-    const timeoutIds = []
-    let paElement = null
-    let handlePlaceSelect = null
-    let scriptLoadListener = null
-    let scriptEl = null
-
-    const schedule = (fn, ms) => {
-      const id = setTimeout(fn, ms)
-      timeoutIds.push(id)
-      return id
-    }
-
-    const cleanup = () => {
-      destroyed = true
-      timeoutIds.forEach(id => clearTimeout(id))
-      if (paElement && handlePlaceSelect) {
-        paElement.removeEventListener('gmp-placeselect', handlePlaceSelect)
-        paElement.removeEventListener('gmp-select', handlePlaceSelect)
-      }
-      if (scriptEl && scriptLoadListener) {
-        scriptEl.removeEventListener('load', scriptLoadListener)
-      }
-      const container = document.getElementById('client-places-container')
-      if (container) container.innerHTML = ''
-    }
-
-    const initPlaces = () => {
-      let attempts = 0
-      const tryInit = () => {
-        if (destroyed) return
-        attempts++
-        const container = document.getElementById('client-places-container')
-        if (!container) { if (attempts < 20) schedule(tryInit, 300); return }
-        if (!window.google?.maps?.places?.PlaceAutocompleteElement) {
-          if (attempts < 20) schedule(tryInit, 500); return
-        }
-        if (container.children.length > 0) return
-
-        paElement = new window.google.maps.places.PlaceAutocompleteElement({
-          types: ['address'],
-          componentRestrictions: { country: 'cl' }
+  // Autocomplete via backend proxy (avoids API key browser restrictions)
+  const searchAddr = (val) => {
+    setAddrQuery(val)
+    setAddrOpen(false)
+    clearTimeout(addrTimer.current)
+    if (val.length < 3) { setAddrSuggestions([]); return }
+    addrTimer.current = setTimeout(async () => {
+      setAddrLoading(true)
+      try {
+        const token = localStorage.getItem('lf_token')
+        const res = await fetch(`/api/places/autocomplete?input=${encodeURIComponent(val)}`, {
+          headers: token ? { Authorization: 'Bearer ' + token } : {}
         })
-        paElement.style.width = '100%'
-        container.appendChild(paElement)
+        const data = await res.json()
+        const sug = (data.suggestions || []).map(s => ({
+          text: s.placePrediction?.text?.text || '',
+          placeId: s.placePrediction?.placeId || '',
+        })).filter(s => s.text)
+        setAddrSuggestions(sug)
+        setAddrOpen(sug.length > 0)
+      } catch(e) { console.error('Places error:', e) }
+      finally { setAddrLoading(false) }
+    }, 350)
+  }
 
-        handlePlaceSelect = async (e) => {
-          if (destroyed) return
-          try {
-            const prediction = e.placePrediction || e.detail?.placePrediction
-            if (!prediction) return
-            const place = prediction.toPlace()
-            await place.fetchFields({ fields: ['formattedAddress','location'] })
-            const addr = place.formattedAddress || ''
-            const lat  = place.location?.lat() || null
-            const lng  = place.location?.lng() || null
-            setClientAddr(addr)
-            setClientLat(lat)
-            setClientLng(lng)
-            const currentLead = leadRef.current
-            if (currentLead?.id && addr) {
-              try { await api.patch(`/leads/${currentLead.id}/address`, { address: addr, lat, lng }) }
-              catch(err) { console.error('Error guardando dirección:', err) }
-            }
-          } catch(err) { console.error('Places error:', err) }
-        }
-        paElement.addEventListener('gmp-placeselect', handlePlaceSelect)
-        paElement.addEventListener('gmp-select', handlePlaceSelect)
+  const selectAddr = async (sug) => {
+    setAddrOpen(false)
+    setAddrQuery(sug.text)
+    try {
+      const token = localStorage.getItem('lf_token')
+      const res = await fetch(`/api/places/details?place_id=${sug.placeId}`, {
+        headers: token ? { Authorization: 'Bearer ' + token } : {}
+      })
+      const data = await res.json()
+      const addr = data.formattedAddress || sug.text
+      const lat  = data.location?.latitude || null
+      const lng  = data.location?.longitude || null
+      setClientAddr(addr)
+      setClientLat(lat)
+      setClientLng(lng)
+      if (leadRef.current?.id && addr) {
+        try { await api.patch(`/leads/${leadRef.current.id}/address`, { address: addr, lat, lng }) }
+        catch(err) { console.error('Error guardando dirección:', err) }
       }
-      schedule(tryInit, 300)
-    }
+    } catch(err) { console.error('Places details error:', err) }
+  }
 
-    if (window.google?.maps?.places) {
-      initPlaces()
-    } else {
-      const existing = document.getElementById('google-maps-script')
-      if (!existing) {
-        scriptEl = document.createElement('script')
-        scriptEl.id = 'google-maps-script'
-        scriptEl.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_PLACES_KEY}&libraries=places`
-        scriptLoadListener = initPlaces
-        scriptEl.addEventListener('load', scriptLoadListener)
-        document.head.appendChild(scriptEl)
-      } else {
-        scriptEl = existing
-        scriptLoadListener = initPlaces
-        scriptEl.addEventListener('load', scriptLoadListener)
-        if (window.google?.maps?.places) initPlaces()
-      }
-    }
-
-    return cleanup
-  }, [lead?.id, placesReset])
+  const confirmManualAddr = (val) => {
+    if (!val.trim()) return
+    setClientAddr(val.trim())
+    setAddrQuery('')
+    setAddrSuggestions([])
+  }
 
   const medida = summary?.medida || ''
   const aro = medida ? medida.match(/R(\d+)/i)?.[1] : null
@@ -522,21 +484,37 @@ function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, c
       <Card className={styles.locationCard}>
         <div className={styles.locationTitle}>📍 Ubicación del cliente</div>
         {!clientAddr ? (
-          <>
-            <div id="client-places-container" style={{width:'100%'}}></div>
+          <div style={{position:'relative'}}>
+            <div style={{position:'relative',display:'flex',alignItems:'center'}}>
+              <span style={{position:'absolute',left:10,color:'#9ca3af',pointerEvents:'none',fontSize:13}}>🔍</span>
+              <input
+                className={styles.locationInput}
+                placeholder="Buscar dirección..."
+                value={addrQuery}
+                autoComplete="off"
+                onChange={e => searchAddr(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Escape') setAddrOpen(false) }}
+                onBlur={() => setTimeout(() => setAddrOpen(false), 200)}
+                onFocus={() => addrSuggestions.length > 0 && setAddrOpen(true)}
+              />
+              {addrLoading && <span style={{position:'absolute',right:10,fontSize:11,color:'#9ca3af'}}>...</span>}
+            </div>
+            {addrOpen && addrSuggestions.length > 0 && (
+              <div className={styles.addrDrop}>
+                {addrSuggestions.map((s,i) => (
+                  <div key={i} className={styles.addrItem} onMouseDown={() => selectAddr(s)}>
+                    📍 {s.text}
+                  </div>
+                ))}
+              </div>
+            )}
             <input
-              id="client-addr-fallback"
               className={styles.locationFallback}
-              placeholder="O escribe la dirección manualmente..."
+              placeholder="O escribe la dirección manualmente y presiona Enter..."
               style={{marginTop:6}}
-              onKeyDown={async e => {
-                if (e.key === 'Enter' && e.target.value.trim()) {
-                  setClientAddr(e.target.value.trim())
-                  e.target.value = ''
-                }
-              }}
+              onKeyDown={e => { if (e.key === 'Enter') confirmManualAddr(e.target.value) }}
             />
-          </>
+          </div>
         ) : (
           <div className={styles.clientAddr}>
             <span>📍 {clientAddr}</span>
@@ -544,7 +522,8 @@ function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, c
               setClientAddr('')
               setClientLat(null)
               setClientLng(null)
-              setPlacesReset(n => n + 1)
+              setAddrQuery('')
+              setAddrSuggestions([])
             }}>✕</button>
           </div>
         )}
