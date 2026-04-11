@@ -26,6 +26,7 @@ import WorkshopNew from '@/pages/WorkshopNew'
 import TireAnalyzer from '@/pages/TireAnalyzer'
 import DeliveryRules from '@/pages/DeliveryRules'
 import CompetitorPrices from '@/pages/CompetitorPrices'
+import InventorySources from '@/pages/InventorySources'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -80,6 +81,7 @@ export default function App() {
             <Route path="delivery-rules" element={<DeliveryRules />} />
             <Route path="business-rules" element={<DeliveryRules />} />
             <Route path="competitor-prices" element={<CompetitorPrices />} />
+            <Route path="inventory-sources" element={<InventorySources />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

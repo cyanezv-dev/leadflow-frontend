@@ -18,6 +18,7 @@ const NAV = [
     { to: '/catalog-normalize',   label: '🔧 Normalizar datos' },
     { to: '/oem-codes',           label: '🏎️ Homologaciones OEM' },
     { to: '/competitor-prices',   label: '🏆 Competencia' },
+    { to: '/inventory-sources',   label: '🏭 Fuentes de stock' },
   ]},
   { to: '/profitability', icon: '📊', label: 'Rentabilidad' },
   { to: '/price-lists',   icon: '🏷️', label: 'Listas de precios' },
