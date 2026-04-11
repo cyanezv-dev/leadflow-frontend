@@ -385,33 +385,67 @@ function CenterPanel({ lead, summary, loadingSummary, onSummaryLoad }) {
 // ── Panel derecho: Talleres + Costos + Acciones ───────────────
 function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, clientAddr, setClientAddr, setClientLat, setClientLng }) {
   const navigate = useNavigate()
+  const leadRef = useRef(lead)
+  useEffect(() => { leadRef.current = lead }, [lead])
   const [fecha, setFecha]           = useState(new Date().toISOString().slice(0,10))
 
   const [selectedWorkshop, setSelectedWorkshop] = useState(null)
   const [selectedHora, setSelectedHora] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [toast, setToast] = useState('')
+  const [placesReset, setPlacesReset] = useState(0)
   const showToast = msg => { setToast(msg); setTimeout(()=>setToast(''),3000) }
 
   // Google Places for client location
   useEffect(() => {
+    let destroyed = false
+    const timeoutIds = []
+    let paElement = null
+    let handlePlaceSelect = null
+    let scriptLoadListener = null
+    let scriptEl = null
+
+    const schedule = (fn, ms) => {
+      const id = setTimeout(fn, ms)
+      timeoutIds.push(id)
+      return id
+    }
+
+    const cleanup = () => {
+      destroyed = true
+      timeoutIds.forEach(id => clearTimeout(id))
+      if (paElement && handlePlaceSelect) {
+        paElement.removeEventListener('gmp-placeselect', handlePlaceSelect)
+        paElement.removeEventListener('gmp-select', handlePlaceSelect)
+      }
+      if (scriptEl && scriptLoadListener) {
+        scriptEl.removeEventListener('load', scriptLoadListener)
+      }
+      const container = document.getElementById('client-places-container')
+      if (container) container.innerHTML = ''
+    }
+
     const initPlaces = () => {
       let attempts = 0
       const tryInit = () => {
+        if (destroyed) return
         attempts++
         const container = document.getElementById('client-places-container')
-        if (!container) { if (attempts < 20) setTimeout(tryInit, 300); return }
+        if (!container) { if (attempts < 20) schedule(tryInit, 300); return }
         if (!window.google?.maps?.places?.PlaceAutocompleteElement) {
-          if (attempts < 20) setTimeout(tryInit, 500); return
+          if (attempts < 20) schedule(tryInit, 500); return
         }
         if (container.children.length > 0) return
-        const pa = new window.google.maps.places.PlaceAutocompleteElement({
+
+        paElement = new window.google.maps.places.PlaceAutocompleteElement({
           types: ['address'],
           componentRestrictions: { country: 'cl' }
         })
-        pa.style.width = '100%'
-        container.appendChild(pa)
-        const handlePlaceSelect = async (e) => {
+        paElement.style.width = '100%'
+        container.appendChild(paElement)
+
+        handlePlaceSelect = async (e) => {
+          if (destroyed) return
           try {
             const prediction = e.placePrediction || e.detail?.placePrediction
             if (!prediction) return
@@ -423,16 +457,17 @@ function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, c
             setClientAddr(addr)
             setClientLat(lat)
             setClientLng(lng)
-            if (lead?.id && addr) {
-              try { await api.patch(`/leads/${lead.id}/address`, { address: addr, lat, lng }) }
+            const currentLead = leadRef.current
+            if (currentLead?.id && addr) {
+              try { await api.patch(`/leads/${currentLead.id}/address`, { address: addr, lat, lng }) }
               catch(err) { console.error('Error guardando dirección:', err) }
             }
           } catch(err) { console.error('Places error:', err) }
         }
-        pa.addEventListener('gmp-placeselect', handlePlaceSelect)
-        pa.addEventListener('gmp-select', handlePlaceSelect)
+        paElement.addEventListener('gmp-placeselect', handlePlaceSelect)
+        paElement.addEventListener('gmp-select', handlePlaceSelect)
       }
-      setTimeout(tryInit, 300)
+      schedule(tryInit, 300)
     }
 
     if (window.google?.maps?.places) {
@@ -440,17 +475,22 @@ function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, c
     } else {
       const existing = document.getElementById('google-maps-script')
       if (!existing) {
-        const script = document.createElement('script')
-        script.id = 'google-maps-script'
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_PLACES_KEY}&libraries=places`
-        script.onload = initPlaces
-        document.head.appendChild(script)
+        scriptEl = document.createElement('script')
+        scriptEl.id = 'google-maps-script'
+        scriptEl.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_PLACES_KEY}&libraries=places`
+        scriptLoadListener = initPlaces
+        scriptEl.addEventListener('load', scriptLoadListener)
+        document.head.appendChild(scriptEl)
       } else {
-        existing.addEventListener('load', initPlaces)
-        if (window.google?.maps) initPlaces()
+        scriptEl = existing
+        scriptLoadListener = initPlaces
+        scriptEl.addEventListener('load', scriptLoadListener)
+        if (window.google?.maps?.places) initPlaces()
       }
     }
-  }, [lead?.id])
+
+    return cleanup
+  }, [lead?.id, placesReset])
 
   const medida = summary?.medida || ''
   const aro = medida ? medida.match(/R(\d+)/i)?.[1] : null
@@ -504,8 +544,7 @@ function RightPanel({ lead, summary, products, cantidad, clientLat, clientLng, c
               setClientAddr('')
               setClientLat(null)
               setClientLng(null)
-              const container = document.getElementById('client-places-container')
-              if (container) container.innerHTML = ''
+              setPlacesReset(n => n + 1)
             }}>✕</button>
           </div>
         )}
