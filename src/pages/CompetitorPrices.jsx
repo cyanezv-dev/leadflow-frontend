@@ -6,6 +6,215 @@ import { fmt } from '@/utils/format'
 import api from '@/utils/api'
 import styles from './CompetitorPrices.module.css'
 
+// ── Panel de configuración de scrapers ───────────────────────
+function ConfigPanel({ onClose }) {
+  const queryClient = useQueryClient()
+  const { data: configs = [], isLoading } = useQuery({
+    queryKey: ['competitor-config'],
+    queryFn: () => api.get('/competitor-config'),
+  })
+
+  const [editing, setEditing]   = useState(null)   // competitor name being edited
+  const [form, setForm]         = useState({})
+  const [saving, setSaving]     = useState(false)
+  const [testing, setTesting]   = useState(false)
+  const [testResult, setTestResult] = useState(null)
+  const [toast, setToast]       = useState('')
+  const showToast = msg => { setToast(msg); setTimeout(() => setToast(''), 4000) }
+
+  const startEdit = (cfg) => {
+    setEditing(cfg.competitor)
+    setForm({ search_url: cfg.search_url || '', price_selector: cfg.price_selector || '', link_selector: cfg.link_selector || '', active: cfg.active })
+    setTestResult(null)
+  }
+
+  const save = async () => {
+    setSaving(true)
+    try {
+      await api.put(`/competitor-config/${encodeURIComponent(editing)}`, form)
+      queryClient.invalidateQueries(['competitor-config'])
+      setEditing(null)
+      showToast('✅ Configuración guardada')
+    } catch(e) { showToast('❌ ' + e.message) }
+    finally { setSaving(false) }
+  }
+
+  const testScrape = async () => {
+    if (!form.search_url) return
+    setTesting(true)
+    setTestResult(null)
+    try {
+      // Construimos una URL de prueba con una medida de ejemplo
+      const testUrl = form.search_url.replace('{query}', encodeURIComponent('205/55 R16 Bridgestone'))
+      const res = await api.post('/competitor-config/test', {
+        url: testUrl,
+        price_selector: form.price_selector,
+        link_selector: form.link_selector,
+      })
+      setTestResult(res)
+    } catch(e) { setTestResult({ error: e.message }) }
+    finally { setTesting(false) }
+  }
+
+  return (
+    <div className={styles.configOverlay} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className={styles.configModal}>
+        <div className={styles.configHeader}>
+          <div className={styles.configTitle}>⚙️ Configurar scrapers de competencia</div>
+          <button className={styles.configClose} onClick={onClose}>✕</button>
+        </div>
+
+        <div className={styles.configHelp}>
+          <strong>¿Cómo funciona?</strong> Para cada competidor debes configurar:
+          <ol className={styles.helpList}>
+            <li>La <strong>URL de búsqueda</strong> con <code>{'{query}'}</code> donde va el término (marca + medida). Ejemplo: <code>{'https://sitio.cl/search?q={query}'}</code></li>
+            <li>El <strong>selector CSS del precio</strong>. Para encontrarlo: abre el sitio en Chrome → click derecho sobre el precio → "Inspeccionar" → clic derecho en el elemento → "Copiar → Copiar selector".</li>
+            <li>Usa el botón <strong>Probar</strong> para verificar que encuentra el precio antes de guardar.</li>
+          </ol>
+        </div>
+
+        {isLoading ? <div className={styles.configLoading}><Spinner /></div> : (
+          <div className={styles.configList}>
+            {configs.map(cfg => (
+              <div key={cfg.competitor} className={`${styles.configRow} ${!cfg.active ? styles.configInactive : ''}`}>
+                {editing === cfg.competitor ? (
+                  <div className={styles.configEditForm}>
+                    <div className={styles.configEditHeader}>
+                      <strong className={styles.configCompName}>{cfg.competitor}</strong>
+                      <label className={styles.configActiveToggle}>
+                        <input type="checkbox" checked={form.active} onChange={e => setForm(f => ({...f, active: e.target.checked}))} />
+                        Activo
+                      </label>
+                    </div>
+
+                    <div className={styles.configField}>
+                      <label className={styles.configLabel}>
+                        URL de búsqueda <span className={styles.configHint}>usa <code>{'{query}'}</code> como placeholder</span>
+                      </label>
+                      <input
+                        className={styles.configInput}
+                        value={form.search_url}
+                        onChange={e => setForm(f => ({...f, search_url: e.target.value}))}
+                        placeholder="https://sitio.cl/search?q={query}"
+                      />
+                    </div>
+
+                    <div className={styles.configField}>
+                      <label className={styles.configLabel}>
+                        Selector CSS del precio <span className={styles.configHint}>click derecho en precio → Inspeccionar → copiar selector</span>
+                      </label>
+                      <input
+                        className={styles.configInput}
+                        value={form.price_selector}
+                        onChange={e => setForm(f => ({...f, price_selector: e.target.value}))}
+                        placeholder=".price, .woocommerce-Price-amount, #precio"
+                      />
+                    </div>
+
+                    <div className={styles.configField}>
+                      <label className={styles.configLabel}>
+                        Selector CSS del link del producto <span className={styles.configHint}>opcional — para abrir el producto directo</span>
+                      </label>
+                      <input
+                        className={styles.configInput}
+                        value={form.link_selector}
+                        onChange={e => setForm(f => ({...f, link_selector: e.target.value}))}
+                        placeholder=".product-item a, .search-result a"
+                      />
+                    </div>
+
+                    {/* Resultado del test */}
+                    {testResult && (
+                      <div className={`${styles.testResult} ${testResult.price ? styles.testOk : styles.testFail}`}>
+                        {testResult.error ? (
+                          <div>❌ <strong>Error de conexión:</strong> {testResult.error}</div>
+                        ) : testResult.price ? (
+                          <div>
+                            ✅ <strong>Precio encontrado: {fmt.currency(testResult.price)}</strong>
+                            {' · '}<em>"{testResult.price_context}"</em>
+                            {' · '}{testResult.ms}ms
+                            {testResult.used_puppeteer && <span className={styles.puppeteerBadge}> 🤖 renderizado con Chrome</span>}
+                          </div>
+                        ) : (
+                          <div>
+                            <div style={{marginBottom:6}}>
+                              {testResult.is_blocked
+                                ? '🛡️ El sitio bloqueó el acceso (Cloudflare / anti-bot)'
+                                : testResult.is_redirect
+                                ? '↪️ El sitio redirigió a otra página (HTML muy pequeño)'
+                                : '⚠️ Precio no encontrado — el selector no coincide con el HTML'}
+                              {' · '}{testResult.html_length} bytes · {testResult.ms}ms
+                            </div>
+
+                            {testResult.used_puppeteer && !testResult.price && (
+                              <div className={styles.testTip}>
+                                🤖 Se usó Chrome para renderizar el JS, pero el selector aún no encontró el precio. Verifica el selector en DevTools.
+                              </div>
+                            )}
+                            {testResult.is_blocked && (
+                              <div className={styles.testTip}>
+                                💡 <strong>Solución:</strong> Este sitio bloquea bots aunque se use Chrome. Deberás ingresar precios manualmente.
+                              </div>
+                            )}
+                            {testResult.is_redirect && (
+                              <div className={styles.testTip}>
+                                💡 <strong>Solución:</strong> Verifica que la URL de búsqueda sea correcta. Abre la URL en el navegador para ver a dónde redirige.
+                              </div>
+                            )}
+                            {!testResult.is_blocked && !testResult.is_redirect && testResult.html_length > 2000 && (
+                              <div className={styles.testTip}>
+                                💡 <strong>Solución:</strong> La página cargó correctamente ({testResult.html_length} bytes) pero el selector CSS no encontró el precio. Revisa el selector usando Chrome DevTools.
+                              </div>
+                            )}
+
+                            {testResult.html_snippet && (
+                              <details className={styles.testDetails}>
+                                <summary>Ver texto del HTML recibido</summary>
+                                <pre className={styles.testHtml}>{testResult.html_snippet}</pre>
+                              </details>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className={styles.configActions}>
+                      <Button size="sm" variant="ghost" onClick={testScrape} loading={testing} disabled={!form.search_url}>
+                        🔍 Probar ahora
+                      </Button>
+                      <Button size="sm" onClick={save} loading={saving}>💾 Guardar</Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setEditing(null); setTestResult(null) }}>Cancelar</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.configRowView}>
+                    <div className={styles.configRowLeft}>
+                      <span className={`${styles.configStatus} ${cfg.active ? styles.statusOn : styles.statusOff}`}>
+                        {cfg.active ? '●' : '○'}
+                      </span>
+                      <div>
+                        <div className={styles.configCompName}>{cfg.competitor}</div>
+                        <div className={styles.configUrlPreview}>
+                          {cfg.search_url || <em className={styles.noConfig}>Sin URL configurada</em>}
+                        </div>
+                        {cfg.price_selector && (
+                          <div className={styles.configSelectorPreview}>CSS: <code>{cfg.price_selector}</code></div>
+                        )}
+                      </div>
+                    </div>
+                    <Button size="sm" variant="ghost" onClick={() => startEdit(cfg)}>✏️ Editar</Button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+        {toast && <Toast message={toast} onClose={() => setToast('')} />}
+      </div>
+    </div>
+  )
+}
+
 const COMPETITORS = [
   'Supermercado del Neumático',
   'ChileNeumatico',
@@ -196,6 +405,7 @@ export default function CompetitorPrices() {
     }
   }
 
+  const [showConfig, setShowConfig] = useState(false)
   const [batchScraping, setBatchScraping] = useState(false)
   const scrapeVisible = async () => {
     if (!products.length) return
@@ -269,6 +479,9 @@ export default function CompetitorPrices() {
             <span className={styles.totalCount}>{total.toLocaleString()} productos</span>
             <Button variant="ghost" size="sm" onClick={scrapeVisible} loading={batchScraping} disabled={!products.length}>
               🔄 Actualizar visibles
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setShowConfig(true)}>
+              ⚙️ Configurar scrapers
             </Button>
           </div>
         </div>
@@ -381,6 +594,7 @@ export default function CompetitorPrices() {
           </div>
         )}
       </div>
+      {showConfig && <ConfigPanel onClose={() => setShowConfig(false)} />}
       {toast && <Toast message={toast} onClose={() => setToast('')} />}
     </div>
   )

@@ -92,6 +92,57 @@
 .fresh        { color:#22c55e }
 .stale        { color:var(--text3) }
 
+/* Config Modal */
+.configOverlay   { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px }
+.configModal     { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); width:100%; max-width:720px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column }
+.configHeader    { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border) }
+.configTitle     { font-size:15px; font-weight:700; color:var(--text) }
+.configClose     { background:none; border:none; color:var(--text3); cursor:pointer; font-size:18px; line-height:1 }
+.configClose:hover { color:var(--text) }
+.configLoading   { padding:40px; display:flex; justify-content:center }
+
+.configHelp      { margin:16px 20px; background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 16px; font-size:12px; color:var(--text2); line-height:1.6 }
+.configHelp strong { color:var(--text) }
+.configHelp code { background:var(--bg); padding:1px 5px; border-radius:4px; font-size:11px; color:var(--accent) }
+.helpList        { margin:6px 0 0 16px; padding:0 }
+.helpList li     { margin-bottom:4px }
+
+.configList      { overflow-y:auto; flex:1; padding:0 12px 12px }
+.configRow       { border:1px solid var(--border); border-radius:var(--radius-sm); margin-top:10px; overflow:hidden }
+.configInactive  { opacity:.6 }
+
+.configRowView   { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; gap:12px }
+.configRowLeft   { display:flex; align-items:flex-start; gap:10px; flex:1; min-width:0 }
+.configStatus    { font-size:16px; margin-top:1px; flex-shrink:0 }
+.statusOn        { color:#22c55e }
+.statusOff       { color:var(--text4) }
+.configCompName  { font-size:13px; font-weight:700; color:var(--text) }
+.configUrlPreview { font-size:11px; color:var(--text3); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:420px }
+.configSelectorPreview { font-size:11px; color:var(--text4); margin-top:1px }
+.configSelectorPreview code { color:var(--accent); font-size:10px }
+.noConfig        { color:var(--red); font-style:italic }
+
+.configEditForm       { padding:14px 16px; display:flex; flex-direction:column; gap:12px; background:var(--bg3) }
+.configEditHeader     { display:flex; align-items:center; justify-content:space-between }
+.configActiveToggle   { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text2); cursor:pointer }
+.configActiveToggle input { accent-color:var(--accent) }
+.configField     { display:flex; flex-direction:column; gap:4px }
+.configLabel     { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:.4px }
+.configHint      { font-weight:400; text-transform:none; letter-spacing:0; color:var(--text4); margin-left:6px }
+.configInput     { background:var(--bg2); border:1.5px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-family:var(--font-body); font-size:12px; padding:8px 10px; outline:none; box-sizing:border-box; width:100%; transition:border .15s }
+.configInput:focus { border-color:var(--accent) }
+.configInput::placeholder { color:var(--text4) }
+.configActions   { display:flex; align-items:center; gap:8px }
+
+.testResult      { font-size:12px; padding:10px 12px; border-radius:var(--radius-sm); line-height:1.6 }
+.testOk          { background:#14532d22; border:1px solid #22c55e44; color:#86efac }
+.testFail        { background:#7f1d1d22; border:1px solid #ef444444; color:#fca5a5 }
+.testTip         { margin-top:8px; padding:8px 10px; background:rgba(0,0,0,.2); border-radius:6px; color:#fcd34d; font-size:11px; line-height:1.5 }
+.puppeteerBadge  { font-size:10px; background:rgba(99,102,241,.2); color:#a5b4fc; padding:1px 6px; border-radius:10px; margin-left:4px }
+.testDetails     { margin-top:8px }
+.testDetails summary { cursor:pointer; font-size:11px; color:#94a3b8; margin-bottom:4px }
+.testHtml        { font-size:10px; color:#94a3b8; white-space:pre-wrap; word-break:break-all; max-height:120px; overflow:auto; background:rgba(0,0,0,.3); padding:8px; border-radius:4px; margin:0 }
+
 /* Pagination */
 .pagination { display:flex; align-items:center; gap:4px; justify-content:center; padding:8px 0 }
 .pageBtn    { background:var(--bg2); border:1px solid var(--border); color:var(--text2); border-radius:6px; padding:5px 10px; font-size:12px; cursor:pointer; transition:background .15s, border-color .15s; min-width:32px }

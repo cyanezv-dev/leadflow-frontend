@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import Header from '@/components/layout/Header'
-import { Button, Card, Spinner, Empty, Toast, Avatar } from '@/components/ui'
+import { Button, Card, Spinner, Empty, Toast, Avatar, ComunaInput } from '@/components/ui'
 import { fmt } from '@/utils/format'
 import api from '@/utils/api'
 import styles from './Workshops.module.css'
@@ -230,7 +230,7 @@ function WorkshopForm({ workshop, onClose, onSaved }) {
                 </div>
                 <div className={styles.formField}>
                   <label>Comuna principal</label>
-                  <input className={styles.input} value={form.comuna} onChange={e=>set('comuna',e.target.value)} placeholder="Las Condes"/>
+                  <ComunaInput value={form.comuna} onChange={(val)=>set('comuna',val)} placeholder="Buscar comuna..." className={styles.input}/>
                 </div>
                 <div className={styles.formField}>
                   <label>URL Google Maps</label>

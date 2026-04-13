@@ -32,6 +32,7 @@ export default function Settings() {
   const [form, setForm] = useState({})
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadingFav, setUploadingFav] = useState(false)
   const [toast, setToast] = useState('')
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
 
@@ -49,6 +50,22 @@ export default function Settings() {
     } catch (e) {
       showToast('Error al subir el logo')
     } finally { setUploading(false) }
+  }
+
+  const uploadFavicon = async (file) => {
+    setUploadingFav(true)
+    try {
+      const fd = new FormData()
+      fd.append('favicon', file)
+      const res = await fetch('/api/upload/favicon', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.url) {
+        set('company_favicon_url', data.url)
+        showToast('Favicon subido correctamente')
+      }
+    } catch (e) {
+      showToast('Error al subir el favicon')
+    } finally { setUploadingFav(false) }
   }
 
   const { data: settings, isLoading } = useQuery({
@@ -96,14 +113,38 @@ export default function Settings() {
             )}
             <div className={styles.logoActions}>
               <label className={styles.uploadBtn}>
-                {uploading ? 'Subiendo...' : '📁 Subir logo'}
+                {uploading ? 'Subiendo…' : '📁 Subir logo'}
                 <input type="file" accept="image/*" style={{display:'none'}}
                   onChange={e => e.target.files[0] && uploadLogo(e.target.files[0])} />
               </label>
-              <Field label="O pega una URL">
+              <Field label="O pega una URL del logo">
                 <input className={styles.input} placeholder="https://empresa.com/logo.png"
                   value={form.company_logo_url || ''}
                   onChange={e => set('company_logo_url', e.target.value)} />
+              </Field>
+            </div>
+          </div>
+
+          <div className={styles.logoWrap} style={{ marginTop: 20 }}>
+            <div className={styles.faviconPreviewWrap}>
+              {form.company_favicon_url ? (
+                <img src={form.company_favicon_url} alt="Favicon" className={styles.faviconPreview} />
+              ) : (
+                <div className={styles.faviconEmpty}>Sin favicon</div>
+              )}
+            </div>
+            <div className={styles.logoActions}>
+              <Field label="Favicon (pestaña del navegador)" hint="PNG, SVG, ICO o WebP · máx. 512 KB. Se usa en la tienda pública.">
+                <label className={styles.uploadBtn}>
+                  {uploadingFav ? 'Subiendo…' : '📁 Subir favicon'}
+                  <input type="file" accept=".ico,.png,.svg,.webp,image/*" style={{ display: 'none' }}
+                    onChange={e => e.target.files[0] && uploadFavicon(e.target.files[0])} />
+                </label>
+              </Field>
+              <Field label="O URL del favicon">
+                <input className={styles.input} placeholder="https://empresa.com/favicon.ico"
+                  value={form.company_favicon_url || ''}
+                  onChange={e => set('company_favicon_url', e.target.value)} />
               </Field>
             </div>
           </div>
