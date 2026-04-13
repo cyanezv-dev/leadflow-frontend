@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Header from '@/components/layout/Header'
 import { Button, Card, Spinner, Empty, Toast, Modal, Input, Select } from '@/components/ui'
@@ -6,7 +6,93 @@ import { fmt, withIva } from '@/utils/format'
 import api from '@/utils/api'
 import styles from './Catalog.module.css'
 
-function ProductModal({ product, fields, onClose, onSaved }) {
+const CATEGORY_PRESETS = ['Neumático', 'Neumáticos', 'Servicio', 'Accesorio', 'Kit', 'Otro']
+const UNIT_PRESETS = ['unidad', 'par', 'kit', 'juego', 'servicio']
+
+function categoryOptionsForSelect(current) {
+  const c = String(current ?? '').trim()
+  const out = [...CATEGORY_PRESETS]
+  if (c && !out.some((x) => x.toLowerCase() === c.toLowerCase())) out.unshift(c)
+  return out
+}
+
+function unitOptionsForSelect(current) {
+  const c = String(current ?? '').trim()
+  const out = [...UNIT_PRESETS]
+  if (c && !out.some((x) => x.toLowerCase() === c.toLowerCase())) out.unshift(c)
+  return out
+}
+
+function ProductModalSummary({ form, custom, photoBroken, onPhotoError }) {
+  const chips = useMemo(() => {
+    const c = custom || {}
+    const pairs = [
+      ['Medida', c.medida],
+      ['SKU', c.codigo_sku],
+      ['Modelo', c.modelo_neumatico || c.modelo],
+      ['Familia', c.familia],
+      ['Cód. proveedor', c.codigo_proveedor],
+      ['Cód. interno', c.codigo_interno],
+      ['Índ. carga', c.indice_carga],
+      ['Índ. velocidad', c.indice_velocidad],
+      ['Tier', c.tier],
+    ].filter(([, v]) => v != null && String(v).trim() !== '')
+    return pairs
+  }, [custom])
+
+  const priceLine =
+    form.price_normal !== '' && form.price_normal != null
+      ? fmt.currency(withIva(Number(form.price_normal) || 0))
+      : null
+  const offerLine =
+    form.price_offer !== '' && form.price_offer != null
+      ? fmt.currency(withIva(Number(form.price_offer) || 0))
+      : null
+
+  return (
+    <div className={styles.mSummary}>
+      <div className={styles.mSummaryTop}>
+        {form.photo_url ? (
+          photoBroken ? (
+            <div className={styles.mSummaryThumbBroken} title="No se pudo cargar la imagen">⚠️</div>
+          ) : (
+            <img
+              src={form.photo_url}
+              alt=""
+              className={styles.mSummaryThumb}
+              onError={onPhotoError}
+            />
+          )
+        ) : (
+          <div className={styles.mSummaryThumbEmpty}>📦</div>
+        )}
+        <div className={styles.mSummaryText}>
+          <div className={styles.mSummaryTitle}>{form.name?.trim() || 'Sin nombre'}</div>
+          <div className={styles.mSummaryMeta}>
+            {[form.brand, form.category].filter(Boolean).join(' · ') || '—'}
+          </div>
+          <div className={styles.mSummaryPrices}>
+            {priceLine && <span>Precio c/IVA: {priceLine}</span>}
+            {offerLine && <span className={styles.mSummaryOffer}>Oferta c/IVA: {offerLine}</span>}
+            <span className={styles.mSummaryStock}>Stock: {form.stock ?? 0}</span>
+          </div>
+        </div>
+      </div>
+      {chips.length > 0 && (
+        <div className={styles.mSummaryChips} aria-label="Datos técnicos">
+          {chips.map(([label, val]) => (
+            <div key={label} className={styles.mSummaryChip}>
+              <span className={styles.mSummaryChipL}>{label}</span>
+              <span className={styles.mSummaryChipV}>{String(val)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ProductModal({ product, fields, brandOptions, onClose, onSaved }) {
   const [form, setForm] = useState({
     name:         product?.name         || '',
     description:  product?.description  || '',
@@ -21,8 +107,17 @@ function ProductModal({ product, fields, onClose, onSaved }) {
   })
   const [custom, setCustom] = useState(product?.custom_fields || {})
   const [saving, setSaving] = useState(false)
+  const [summaryPhotoBroken, setSummaryPhotoBroken] = useState(false)
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const setC = (k, v) => setCustom(c => ({ ...c, [k]: v }))
+
+  const categoryOpts = useMemo(() => categoryOptionsForSelect(form.category), [form.category])
+  const unitOpts = useMemo(() => unitOptionsForSelect(form.unit), [form.unit])
+  const brandListId = 'catalog-product-modal-brands'
+
+  useEffect(() => {
+    setSummaryPhotoBroken(false)
+  }, [form.photo_url, product?.id])
 
   const save = async () => {
     if (!form.name) return
@@ -37,19 +132,51 @@ function ProductModal({ product, fields, onClose, onSaved }) {
   }
 
   return (
-    <Modal title={product?.id ? 'Editar producto' : 'Nuevo producto'} onClose={onClose} width={640}>
+    <Modal title={product?.id ? 'Editar producto' : 'Nuevo producto'} onClose={onClose} width={720}>
+      <ProductModalSummary
+        form={form}
+        custom={custom}
+        photoBroken={summaryPhotoBroken}
+        onPhotoError={() => setSummaryPhotoBroken(true)}
+      />
       <div className={styles.mSection}>
         <div className={styles.mTitle}>📦 Información base</div>
         <div className={styles.mGrid}>
           <div style={{gridColumn:'1/-1'}}>
             <Input label="Nombre *" placeholder="Nombre del producto" value={form.name} onChange={e=>set('name',e.target.value)}/>
           </div>
-          <Input label="Marca" placeholder="Bridgestone" value={form.brand} onChange={e=>set('brand',e.target.value)}/>
-          <Input label="Categoría" placeholder="Neumático, Servicio..." value={form.category} onChange={e=>set('category',e.target.value)}/>
+          <div>
+            <Input
+              label="Marca"
+              placeholder="Escribe o elige del catálogo"
+              value={form.brand}
+              list={brandListId}
+              onChange={e => set('brand', e.target.value)}
+            />
+            <datalist id={brandListId}>
+              {(brandOptions || []).map((b) => (
+                <option key={b} value={b} />
+              ))}
+            </datalist>
+          </div>
+          <Select label="Categoría" value={form.category} onChange={e => set('category', e.target.value)}>
+            <option value="">Seleccionar…</option>
+            {categoryOpts.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </Select>
           <Input label="Precio normal" type="number" placeholder="99990" value={form.price_normal} onChange={e=>set('price_normal',e.target.value)}/>
           <Input label="Precio oferta" type="number" placeholder="Opcional" value={form.price_offer} onChange={e=>set('price_offer',e.target.value)}/>
           <Input label="Stock" type="number" value={form.stock} onChange={e=>set('stock',e.target.value)}/>
-          <Input label="Unidad" placeholder="unidad, par, kit..." value={form.unit} onChange={e=>set('unit',e.target.value)}/>
+          <Select label="Unidad" value={form.unit} onChange={e => set('unit', e.target.value)}>
+            {unitOpts.map((u) => (
+              <option key={u} value={u}>
+                {u}
+              </option>
+            ))}
+          </Select>
           <div style={{gridColumn:'1/-1'}}>
             <Input label="URL de foto" placeholder="https://..." value={form.photo_url} onChange={e=>set('photo_url',e.target.value)}/>
           </div>
@@ -509,8 +636,8 @@ export default function Catalog() {
         </div>
       )}
 
-      {showNew   && <ProductModal fields={fields} onClose={()=>setShowNew(false)} onSaved={()=>{refresh();showToast('Producto creado')}}/>}
-      {editing   && <ProductModal product={editing} fields={fields} onClose={()=>setEditing(null)} onSaved={()=>{refresh();showToast('Producto actualizado')}}/>}
+      {showNew   && <ProductModal fields={fields} brandOptions={filterOptions.brands} onClose={()=>setShowNew(false)} onSaved={()=>{refresh();showToast('Producto creado')}}/>}
+      {editing   && <ProductModal product={editing} fields={fields} brandOptions={filterOptions.brands} onClose={()=>setEditing(null)} onSaved={()=>{refresh();showToast('Producto actualizado')}}/>}
       {showFields&& <FieldsModal fields={fields} onClose={()=>setShowFields(false)} onSaved={()=>qc.invalidateQueries(['catalog-fields'])}/>}
       {toast     && <Toast message={toast} onClose={()=>setToast('')}/>}
     </div>
