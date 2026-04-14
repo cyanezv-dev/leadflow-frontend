@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Header from '@/components/layout/Header'
 import { Button, Card, Spinner, Empty, Toast, Modal, Input, Select } from '@/components/ui'
@@ -104,12 +104,44 @@ function ProductModal({ product, fields, brandOptions, onClose, onSaved }) {
     stock:        product?.stock        || 0,
     photo_url:    product?.photo_url    || '',
     active:       product?.active !== false,
+    peso_kg:       product?.peso_kg       || '',
+    caja_largo_cm: product?.caja_largo_cm || '',
+    caja_ancho_cm: product?.caja_ancho_cm || '',
+    caja_alto_cm:  product?.caja_alto_cm  || '',
+    volumen_cm3:   product?.volumen_cm3   || '',
   })
   const [custom, setCustom] = useState(product?.custom_fields || {})
   const [saving, setSaving] = useState(false)
   const [summaryPhotoBroken, setSummaryPhotoBroken] = useState(false)
+  const [dimLoading, setDimLoading] = useState(false)
+  const [dimMsg, setDimMsg] = useState('')
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const setC = (k, v) => setCustom(c => ({ ...c, [k]: v }))
+
+  // Auto-rellenar dimensiones desde catálogo de medidas
+  const autoFillDimensiones = useCallback(async () => {
+    const medida = (custom.medida || '').trim()
+    if (!medida) return setDimMsg('⚠️ Completa el campo "Medida" en los campos específicos primero.')
+    setDimLoading(true); setDimMsg('')
+    try {
+      const res = await api.get(`/despachos/neumaticos/dimensiones?activo=true`)
+      const dim = (res.data?.data || []).find(d => d.medida.toLowerCase() === medida.toLowerCase())
+      if (!dim) {
+        setDimMsg(`⚠️ Medida "${medida}" no encontrada en el catálogo de dimensiones. Agrégala primero en Logística → Medidas.`)
+        return
+      }
+      setForm(f => ({
+        ...f,
+        peso_kg:       dim.peso_real_kg,
+        caja_largo_cm: dim.caja_largo_cm,
+        caja_ancho_cm: dim.caja_ancho_cm,
+        caja_alto_cm:  dim.caja_alto_cm,
+        volumen_cm3:   dim.volumen_cm3,
+      }))
+      setDimMsg(`✅ Dimensiones cargadas para ${dim.medida} (${dim.categoria})`)
+    } catch { setDimMsg('Error al consultar dimensiones') }
+    finally { setDimLoading(false) }
+  }, [custom.medida])
 
   const categoryOpts = useMemo(() => categoryOptionsForSelect(form.category), [form.category])
   const unitOpts = useMemo(() => unitOptionsForSelect(form.unit), [form.unit])
@@ -244,6 +276,69 @@ function ProductModal({ product, fields, brandOptions, onClose, onSaved }) {
           </div>
         </div>
       )}
+
+      {/* ── Dimensiones de despacho ── */}
+      <div className={styles.mSection}>
+        <div className={styles.mTitle} style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:8}}>
+          <span>📦 Dimensiones de despacho</span>
+          <button
+            type="button"
+            className={styles.autoFillBtn}
+            onClick={autoFillDimensiones}
+            disabled={dimLoading}
+          >
+            {dimLoading ? '⏳ Buscando…' : '✨ Auto-rellenar desde medida'}
+          </button>
+        </div>
+        {dimMsg && (
+          <div className={`${styles.dimMsg} ${dimMsg.startsWith('✅') ? styles.dimMsgOk : styles.dimMsgWarn}`}>
+            {dimMsg}
+          </div>
+        )}
+        <div className={styles.mGrid}>
+          <Input
+            label="Peso (kg)"
+            type="number" step="0.1"
+            placeholder="Ej: 9.5"
+            value={form.peso_kg}
+            onChange={e => set('peso_kg', e.target.value)}
+          />
+          <Input
+            label="Largo caja (cm)"
+            type="number" step="0.01"
+            placeholder="Ej: 63.2"
+            value={form.caja_largo_cm}
+            onChange={e => set('caja_largo_cm', e.target.value)}
+          />
+          <Input
+            label="Ancho caja (cm)"
+            type="number" step="0.01"
+            placeholder="Ej: 63.2"
+            value={form.caja_ancho_cm}
+            onChange={e => set('caja_ancho_cm', e.target.value)}
+          />
+          <Input
+            label="Alto caja (cm)"
+            type="number" step="0.01"
+            placeholder="Ej: 20.5"
+            value={form.caja_alto_cm}
+            onChange={e => set('caja_alto_cm', e.target.value)}
+          />
+          <Input
+            label="Volumen (cm³)"
+            type="number" step="0.01"
+            placeholder="Auto-calculado"
+            value={form.volumen_cm3}
+            onChange={e => set('volumen_cm3', e.target.value)}
+          />
+          {form.peso_kg && form.caja_largo_cm && (
+            <div className={styles.dimPreview}>
+              <span className={styles.dimPreviewLabel}>Peso volumétrico (÷4000)</span>
+              <strong>{(parseFloat(form.caja_largo_cm) * parseFloat(form.caja_ancho_cm || form.caja_largo_cm) * parseFloat(form.caja_alto_cm || 0) / 4000).toFixed(2)} kg</strong>
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className={styles.mActions}>
         <label className={styles.activeToggle}>
