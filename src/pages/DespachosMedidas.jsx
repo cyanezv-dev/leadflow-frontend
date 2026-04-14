@@ -27,6 +27,18 @@ function AutoGenerarResultado({ resultado, onClose }) {
         </div>
       </div>
 
+      {resultado.aviso && (
+        <div className={styles.dimMsg} style={{ background:'#fef3c7', color:'#92400e', marginBottom:12 }}>
+          ⚠️ {resultado.aviso}
+          {resultado.field_keys_en_catalogo?.length > 0 && (
+            <div style={{ marginTop:6 }}>
+              <strong>Campos encontrados en el catálogo:</strong>{' '}
+              {resultado.field_keys_en_catalogo.join(' · ')}
+            </div>
+          )}
+        </div>
+      )}
+
       {resultado.detalle?.length > 0 && (
         <div className={styles.autoGenDetalle}>
           {resultado.detalle.map(d => (
@@ -145,14 +157,16 @@ export default function DespachosMedidas() {
   const [genResultado, setGenResultado] = useState(null)
   const qc = useQueryClient()
 
+  const [genError, setGenError] = useState('')
+
   const autoGenerar = async () => {
-    setGenerando(true)
+    setGenerando(true); setGenError('')
     try {
       const { data } = await api.post('/despachos/neumaticos/dimensiones/auto-generar')
       qc.invalidateQueries(['neumatico-dimensiones'])
       setGenResultado(data)
     } catch (e) {
-      alert(e.response?.data?.error || 'Error al auto-generar')
+      setGenError(e.response?.data?.error || `Error ${e.response?.status || ''}: ${e.message}`)
     } finally { setGenerando(false) }
   }
 
@@ -180,8 +194,14 @@ export default function DespachosMedidas() {
         <Button onClick={() => setNuevo(true)}>+ Nueva medida</Button>
       </div>
 
+      {genError && (
+        <div className={styles.dimMsg} style={{ background:'#fee2e2', color:'#b91c1c', marginBottom:12 }}>
+          ❌ {genError}
+        </div>
+      )}
+
       <div className={styles.infoBox}>
-        💡 <strong>Auto-generar</strong> toma todas las medidas únicas del catálogo de productos y calcula automáticamente dimensiones y peso estimado para las que aún no existen.
+        💡 <strong>Auto-generar</strong> toma todas las medidas únicas del catálogo de productos (campo <code>medida</code>) y calcula automáticamente dimensiones y peso estimado para las que aún no existen.
       </div>
 
       {isLoading ? <Spinner /> : medidas.length === 0 ? (
