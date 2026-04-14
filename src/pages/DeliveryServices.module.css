@@ -1,0 +1,49 @@
+.page{display:flex;flex-direction:column;height:100%;overflow:hidden}
+.content{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.loading{display:flex;align-items:center;justify-content:center;padding:60px}
+
+.statsRow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+.statN{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--accent)}
+.statL{font-size:12px;color:var(--text3)}
+
+.listCard{padding:0}
+.list{display:flex;flex-direction:column}
+.row{display:flex;align-items:flex-start;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);transition:background .12s}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--bg3)}
+.rowInactive{opacity:.55}
+.rowMain{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.rowName{font-size:15px;font-weight:700;color:var(--text)}
+.rowMeta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tipoBadge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--accent-dim);color:var(--accent)}
+.metaChip{font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:2px 8px;border-radius:10px}
+.rowDesc{font-size:12px;color:var(--text3)}
+.rowDias{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.diaTag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--bg4);color:var(--text4);border:1px solid var(--border)}
+.diaTagOn{background:var(--green-bg);color:var(--green);border-color:rgba(5,150,105,.25)}
+.horario{font-size:11px;color:var(--text3);margin-left:4px}
+
+.rowActions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.actionBtn{width:28px;height:28px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.actionBtn:hover{background:var(--bg5)}
+.delBtn:hover{background:var(--red-bg);border-color:var(--red)}
+
+/* Info box */
+.infoBox{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px}
+.infoTitle{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px}
+.infoList{padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.infoList li{font-size:12px;color:var(--text3);line-height:1.5}
+
+/* Modal */
+.section{margin-bottom:16px}
+.sectionTitle{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.diasRow{display:flex;flex-wrap:wrap;gap:6px}
+.diaBtn{padding:5px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .15s;font-family:var(--font-body);text-transform:capitalize}
+.diaBtn:hover{border-color:var(--border3);color:var(--text2)}
+.diaBtnOn{background:var(--green-bg);border-color:rgba(5,150,105,.3);color:var(--green)}
+.modalFooter{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border);margin-top:8px}
+.activeToggle{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer}
+
+@media(max-width:768px){.content{padding:14px 16px}.statsRow{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}

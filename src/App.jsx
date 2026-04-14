@@ -25,6 +25,7 @@ import AttentionPanel from '@/pages/AttentionPanel'
 import WorkshopNew from '@/pages/WorkshopNew'
 import TireAnalyzer from '@/pages/TireAnalyzer'
 import DeliveryRules from '@/pages/DeliveryRules'
+import DeliveryServices from '@/pages/DeliveryServices'
 import CompetitorPrices from '@/pages/CompetitorPrices'
 import InventorySources from '@/pages/InventorySources'
 
@@ -79,6 +80,7 @@ export default function App() {
             <Route path="settings" element={<Settings />} />
             <Route path="tire-analyzer" element={<TireAnalyzer />} />
             <Route path="delivery-rules" element={<DeliveryRules />} />
+            <Route path="delivery-services" element={<DeliveryServices />} />
             <Route path="business-rules" element={<DeliveryRules />} />
             <Route path="competitor-prices" element={<CompetitorPrices />} />
             <Route path="inventory-sources" element={<InventorySources />} />

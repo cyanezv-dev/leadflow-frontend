@@ -55,8 +55,9 @@
 .capTitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
 .capInfo{font-size:12px;color:var(--text3);background:var(--accent-dim);padding:6px 10px;border-radius:var(--radius-sm)}
 .checkGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
-.checkItem{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer}
+.checkItem{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;flex-wrap:wrap}
 .checkItem input{cursor:pointer}
+.checkHint{font-size:11px;color:var(--text3);font-weight:400;margin-left:2px}
 
 .horariosGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .diaCard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;opacity:.6;transition:all .15s}

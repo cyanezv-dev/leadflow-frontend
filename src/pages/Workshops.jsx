@@ -40,10 +40,12 @@ function WorkshopForm({ workshop, onClose, onSaved }) {
     turnos_por_puesto:  workshop?.turnos_por_puesto  || 1,
     aro_min:            workshop?.aro_min            || 13,
     aro_max:            workshop?.aro_max            || 22,
-    instala_runflat:    workshop?.instala_runflat    || false,
-    tipos_vehiculo:     workshop?.tipos_vehiculo     || [],
-    marcas_neumaticos:  workshop?.marcas_neumaticos  || [],
-    todas_marcas:       workshop?.todas_marcas       !== false,
+    instala_runflat:      workshop?.instala_runflat      || false,
+    tipos_vehiculo:       workshop?.tipos_vehiculo       || [],
+    marcas_neumaticos:    workshop?.marcas_neumaticos    || [],
+    todas_marcas:         workshop?.todas_marcas         !== false,
+    permite_instalacion:  workshop?.permite_instalacion  !== false,
+    permite_retiro:       workshop?.permite_retiro       === true,
   })
 
   const [schedules, setSchedules] = useState(
@@ -341,6 +343,16 @@ function WorkshopForm({ workshop, onClose, onSaved }) {
                 <label className={styles.checkItem}>
                   <input type="checkbox" checked={form.instala_runflat} onChange={e=>set('instala_runflat',e.target.checked)}/>
                   <strong>Instala neumáticos Runflat</strong>
+                </label>
+                <label className={styles.checkItem}>
+                  <input type="checkbox" checked={form.permite_instalacion} onChange={e=>set('permite_instalacion',e.target.checked)}/>
+                  <strong>🔧 Permite instalación</strong>
+                  <span className={styles.checkHint}>El taller instala los neumáticos al cliente</span>
+                </label>
+                <label className={styles.checkItem}>
+                  <input type="checkbox" checked={form.permite_retiro} onChange={e=>set('permite_retiro',e.target.checked)}/>
+                  <strong>📦 Permite retiro</strong>
+                  <span className={styles.checkHint}>El cliente puede retirar los neumáticos sin instalación</span>
                 </label>
               </div>
             </div>

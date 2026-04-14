@@ -26,8 +26,9 @@ const NAV = [
     { to: '/delivery-rules', label: '🚚 Tiempos de entrega' },
   ]},
   { to: '/workshops', icon: '🔧', label: 'Talleres', sub: [
-    { to: '/workshops',     label: '📋 Ver talleres' },
-    { to: '/workshops/new', label: '➕ Nuevo taller' },
+    { to: '/workshops',           label: '📋 Ver talleres' },
+    { to: '/workshops/new',       label: '➕ Nuevo taller' },
+    { to: '/delivery-services',   label: '🚚 Servicios a domicilio' },
   ]},
   { to: '/calendar',      icon: '📅', label: 'Calendario' },
   { to: '/reports',       icon: '📈', label: 'Reportes' },
