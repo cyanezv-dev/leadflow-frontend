@@ -159,16 +159,18 @@
 .trendDown { background: var(--red-bg); color: var(--red); }
 
 /* ── Modal ───────────────────────────────────────────────── */
+/* Scroll: el cuadro blanco (.modal) es el contenedor con overflow; evita fallos de flex + align-items:center en Safari/iOS. */
 .modalOverlay {
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(6px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   animation: fadeIn 0.15s ease;
 }
 .modal {
@@ -176,23 +178,33 @@
   border: 1px solid var(--border2);
   border-radius: 16px;
   width: 100%;
-  max-height: min(92vh, calc(100vh - 32px));
-  display: flex;
-  flex-direction: column;
+  max-height: min(90vh, calc(100vh - 32px));
+  margin: 0 auto 8px;
   box-shadow: var(--shadow);
   animation: fadeIn 0.2s ease;
-  margin: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 .modalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
-  padding: 20px 24px 0;
+  gap: 12px;
+  padding: 18px 24px 14px;
+  margin: 0;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  border-radius: 16px 16px 0 0;
 }
 .modalTitle { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
 .modalClose {
   width: 28px; height: 28px;
+  flex-shrink: 0;
   background: var(--bg4); border: none;
   border-radius: 6px; color: var(--text3);
   cursor: pointer; font-size: 12px;
@@ -200,17 +212,12 @@
 }
 .modalClose:hover { background: var(--bg5); color: var(--text); }
 .modalBody {
-  flex: 1;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 20px 24px 24px;
+  padding: 16px 24px 24px;
 }
 
 @supports (height: 100dvh) {
   .modal {
-    max-height: min(92dvh, calc(100dvh - 32px));
+    max-height: min(90dvh, calc(100dvh - 32px));
   }
 }
 
