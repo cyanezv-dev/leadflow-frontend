@@ -30,6 +30,12 @@ const NAV = [
     { to: '/workshops/new',       label: '➕ Nuevo taller' },
     { to: '/delivery-services',   label: '🚚 Servicios a domicilio' },
   ]},
+  { to: '/despachos', icon: '🚚', label: 'Logística', sub: [
+    { to: '/despachos',              label: '📋 Despachos' },
+    { to: '/despachos/cotizador',    label: '📐 Cotizador' },
+    { to: '/despachos/medidas',      label: '📦 Medidas' },
+    { to: '/despachos/couriers',     label: '⚙️ Couriers' },
+  ]},
   { to: '/calendar',      icon: '📅', label: 'Calendario' },
   { to: '/reports',       icon: '📈', label: 'Reportes' },
 ]

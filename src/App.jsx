@@ -28,6 +28,10 @@ import DeliveryRules from '@/pages/DeliveryRules'
 import DeliveryServices from '@/pages/DeliveryServices'
 import CompetitorPrices from '@/pages/CompetitorPrices'
 import InventorySources from '@/pages/InventorySources'
+import Despachos from '@/pages/Despachos'
+import DespachosCotizador from '@/pages/DespachosCotizador'
+import DespachosMedidas from '@/pages/DespachosMedidas'
+import DespachosCouriers from '@/pages/DespachosCouriers'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -84,6 +88,10 @@ export default function App() {
             <Route path="business-rules" element={<DeliveryRules />} />
             <Route path="competitor-prices" element={<CompetitorPrices />} />
             <Route path="inventory-sources" element={<InventorySources />} />
+            <Route path="despachos" element={<Despachos />} />
+            <Route path="despachos/cotizador" element={<DespachosCotizador />} />
+            <Route path="despachos/medidas" element={<DespachosMedidas />} />
+            <Route path="despachos/couriers" element={<DespachosCouriers />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
