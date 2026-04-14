@@ -118,16 +118,15 @@ function ProductModal({ product, fields, brandOptions, onClose, onSaved }) {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const setC = (k, v) => setCustom(c => ({ ...c, [k]: v }))
 
-  // Auto-rellenar dimensiones desde catálogo de medidas
-  const autoFillDimensiones = useCallback(async () => {
-    const medida = (custom.medida || '').trim()
-    if (!medida) return setDimMsg('⚠️ Completa el campo "Medida" en los campos específicos primero.')
+  // Busca dimensiones en el catálogo y rellena el form
+  const fetchAndFillDim = useCallback(async (medida) => {
+    if (!medida) { setDimMsg(''); return }
     setDimLoading(true); setDimMsg('')
     try {
-      const res = await api.get(`/despachos/neumaticos/dimensiones?activo=true`)
+      const res = await api.get('/despachos/neumaticos/dimensiones?activo=true')
       const dim = (res.data?.data || []).find(d => d.medida.toLowerCase() === medida.toLowerCase())
       if (!dim) {
-        setDimMsg(`⚠️ Medida "${medida}" no encontrada en el catálogo de dimensiones. Agrégala primero en Logística → Medidas.`)
+        setDimMsg(`⚠️ "${medida}" no está en el catálogo de dimensiones (Logística → Medidas).`)
         return
       }
       setForm(f => ({
@@ -141,7 +140,20 @@ function ProductModal({ product, fields, brandOptions, onClose, onSaved }) {
       setDimMsg(`✅ Dimensiones cargadas para ${dim.medida} (${dim.categoria})`)
     } catch { setDimMsg('Error al consultar dimensiones') }
     finally { setDimLoading(false) }
-  }, [custom.medida])
+  }, [])
+
+  // Auto-disparar cuando cambia custom.medida (debounce 600ms)
+  useEffect(() => {
+    const medida = (custom.medida || '').trim()
+    if (!medida) { setDimMsg(''); return }
+    const timer = setTimeout(() => fetchAndFillDim(medida), 600)
+    return () => clearTimeout(timer)
+  }, [custom.medida, fetchAndFillDim])
+
+  // Botón manual (por si el usuario quiere re-intentar)
+  const autoFillDimensiones = useCallback(() => {
+    fetchAndFillDim((custom.medida || '').trim())
+  }, [custom.medida, fetchAndFillDim])
 
   const categoryOpts = useMemo(() => categoryOptionsForSelect(form.category), [form.category])
   const unitOpts = useMemo(() => unitOptionsForSelect(form.unit), [form.unit])
