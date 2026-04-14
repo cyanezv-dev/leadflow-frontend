@@ -1,9 +1,86 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Header from '@/components/layout/Header'
 import { Button, Spinner, Modal, Input } from '@/components/ui'
 import api from '@/utils/api'
 import styles from './Despachos.module.css'
+
+function MedidaSearch({ medidas, value, onChange }) {
+  const [query, setQuery] = useState(value || '')
+  const [open, setOpen]   = useState(false)
+  const ref = useRef(null)
+
+  // Cerrar al hacer click fuera
+  useEffect(() => {
+    const handler = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  // Si el valor externo cambia (reset), limpiar
+  useEffect(() => { if (!value) setQuery('') }, [value])
+
+  const filtered = query.trim().length === 0
+    ? medidas
+    : medidas.filter(m => m.medida.toLowerCase().includes(query.toLowerCase().replace(/\s/g, '')))
+
+  const select = (m) => {
+    setQuery(m.medida)
+    onChange(m.medida)
+    setOpen(false)
+  }
+
+  const pasajero  = filtered.filter(m => m.categoria === 'pasajero')
+  const camioneta = filtered.filter(m => m.categoria === 'camioneta')
+
+  return (
+    <div className={styles.medidaSearchWrap} ref={ref}>
+      <input
+        className={`${styles.input} ${value ? styles.inputSelected : ''}`}
+        value={query}
+        placeholder="Escribe para buscar: 205, R17, 225/45…"
+        onChange={e => { setQuery(e.target.value); onChange(''); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        autoComplete="off"
+      />
+      {value && (
+        <span className={styles.medidaSeleccionada}>✓ {value}</span>
+      )}
+      {open && (
+        <div className={styles.medidaDropdown}>
+          {filtered.length === 0 ? (
+            <div className={styles.medidaEmpty}>Sin resultados para "{query}"</div>
+          ) : (
+            <>
+              {pasajero.length > 0 && (
+                <div className={styles.medidaGroup}>
+                  <div className={styles.medidaGroupLabel}>🚗 Pasajero</div>
+                  {pasajero.map(m => (
+                    <button key={m.medida} className={styles.medidaOption} onClick={() => select(m)}>
+                      <strong>{m.medida}</strong>
+                      <span className={styles.medidaOptionMeta}>{m.peso_real_kg} kg · {m.diam_ext_cm}cm ⌀</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {camioneta.length > 0 && (
+                <div className={styles.medidaGroup}>
+                  <div className={styles.medidaGroupLabel}>🚙 Camioneta / SUV</div>
+                  {camioneta.map(m => (
+                    <button key={m.medida} className={styles.medidaOption} onClick={() => select(m)}>
+                      <strong>{m.medida}</strong>
+                      <span className={styles.medidaOptionMeta}>{m.peso_real_kg} kg · {m.diam_ext_cm}cm ⌀</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 const COURIERS_ICONS = {
   CHILEXPRESS: '🔵',
@@ -111,8 +188,6 @@ export default function DespachosCotizador() {
     staleTime: 5 * 60 * 1000,
   })
   const medidas = medidasData?.data || []
-  const medidasPasajero  = medidas.filter(m => m.categoria === 'pasajero')
-  const medidasCamioneta = medidas.filter(m => m.categoria === 'camioneta')
 
   const cotizar = async () => {
     if (!form.medida || !form.comuna_destino) return setError('Ingresa medida y comuna de destino')
@@ -139,23 +214,11 @@ export default function DespachosCotizador() {
 
           <div className={styles.formGroup}>
             <label className={styles.fieldLabel}>Medida del neumático *</label>
-            <select className={styles.select} value={form.medida} onChange={e => set('medida', e.target.value)}>
-              <option value="">Seleccionar medida…</option>
-              <optgroup label="Pasajero">
-                {medidasPasajero.map(m => (
-                  <option key={m.medida} value={m.medida}>
-                    {m.medida} — {m.peso_real_kg} kg
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="Camioneta / SUV">
-                {medidasCamioneta.map(m => (
-                  <option key={m.medida} value={m.medida}>
-                    {m.medida} — {m.peso_real_kg} kg
-                  </option>
-                ))}
-              </optgroup>
-            </select>
+            <MedidaSearch
+              medidas={medidas}
+              value={form.medida}
+              onChange={v => set('medida', v)}
+            />
           </div>
 
           <div className={styles.formGroup}>

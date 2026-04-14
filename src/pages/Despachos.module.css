@@ -227,6 +227,36 @@
   font-size: 13px; color: var(--text2); cursor: pointer;
 }
 
+/* ── Medida autocomplete search ── */
+.medidaSearchWrap { position: relative; }
+.inputSelected { border-color: var(--accent) !important; }
+.medidaSeleccionada {
+  display: block; font-size: 11px; color: var(--accent);
+  font-weight: 600; margin-top: 4px;
+}
+.medidaDropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12); z-index: 100;
+  max-height: 300px; overflow-y: auto;
+}
+.medidaGroup { padding: 4px 0; }
+.medidaGroupLabel {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .05em;
+  padding: 6px 12px 4px;
+}
+.medidaOption {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 8px 12px; background: none; border: none;
+  cursor: pointer; text-align: left; gap: 8px; color: var(--text1);
+  font-size: 13px; transition: background .1s;
+}
+.medidaOption:hover { background: var(--bg3); }
+.medidaOption strong { font-weight: 700; }
+.medidaOptionMeta { font-size: 11px; color: var(--text3); white-space: nowrap; }
+.medidaEmpty { padding: 16px 12px; font-size: 13px; color: var(--text3); text-align: center; }
+
 /* ── Info box ── */
 .infoBox {
   background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
