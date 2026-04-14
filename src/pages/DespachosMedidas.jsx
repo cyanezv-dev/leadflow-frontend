@@ -5,6 +5,56 @@ import { Button, Spinner, Empty, Modal, Input, Select } from '@/components/ui'
 import api from '@/utils/api'
 import styles from './Despachos.module.css'
 
+function AutoGenerarResultado({ resultado, onClose }) {
+  return (
+    <Modal title="Auto-generar desde catálogo" onClose={onClose} width={520}>
+      <div className={styles.autoGenStats}>
+        <div className={styles.autoGenStat}>
+          <span className={styles.autoGenVal} style={{ color: '#10b981' }}>{resultado.creadas}</span>
+          <span className={styles.autoGenLabel}>Creadas</span>
+        </div>
+        <div className={styles.autoGenStat}>
+          <span className={styles.autoGenVal} style={{ color: '#6366f1' }}>{resultado.existentes}</span>
+          <span className={styles.autoGenLabel}>Ya existían</span>
+        </div>
+        <div className={styles.autoGenStat}>
+          <span className={styles.autoGenVal} style={{ color: '#f59e0b' }}>{resultado.invalidas}</span>
+          <span className={styles.autoGenLabel}>Formato inválido</span>
+        </div>
+        <div className={styles.autoGenStat}>
+          <span className={styles.autoGenVal}>{resultado.total}</span>
+          <span className={styles.autoGenLabel}>Total en catálogo</span>
+        </div>
+      </div>
+
+      {resultado.detalle?.length > 0 && (
+        <div className={styles.autoGenDetalle}>
+          {resultado.detalle.map(d => (
+            <div key={d.medida} className={styles.autoGenRow}>
+              <strong>{d.medida}</strong>
+              {d.resultado === 'creada' && (
+                <span className={styles.autoGenCreada}>
+                  ✅ {d.diam_ext_cm}cm ⌀ · {d.peso_real_kg}kg · {d.categoria}
+                </span>
+              )}
+              {d.resultado === 'ya_existe' && (
+                <span className={styles.autoGenExiste}>↩ Ya existe</span>
+              )}
+              {d.resultado === 'formato_invalido' && (
+                <span className={styles.autoGenInvalida}>⚠️ Formato no reconocido</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className={styles.modalFooter}>
+        <Button onClick={onClose}>Cerrar</Button>
+      </div>
+    </Modal>
+  )
+}
+
 const EMPTY_FORM = {
   medida: '', ancho_seccion_mm: '', diametro_aro_pulgadas: '', perfil_pct: '',
   diam_ext_cm: '', ancho_seccion_cm: '', caja_largo_cm: '', caja_ancho_cm: '',
@@ -91,6 +141,20 @@ export default function DespachosMedidas() {
   const [filtro, setFiltro] = useState('')
   const [editando, setEditando] = useState(null)
   const [nuevo, setNuevo] = useState(false)
+  const [generando, setGenerando] = useState(false)
+  const [genResultado, setGenResultado] = useState(null)
+  const qc = useQueryClient()
+
+  const autoGenerar = async () => {
+    setGenerando(true)
+    try {
+      const { data } = await api.post('/despachos/neumaticos/dimensiones/auto-generar')
+      qc.invalidateQueries(['neumatico-dimensiones'])
+      setGenResultado(data)
+    } catch (e) {
+      alert(e.response?.data?.error || 'Error al auto-generar')
+    } finally { setGenerando(false) }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['neumatico-dimensiones'],
@@ -106,7 +170,18 @@ export default function DespachosMedidas() {
 
       <div className={styles.toolbar}>
         <input className={styles.searchInput} value={filtro} onChange={e => setFiltro(e.target.value)} placeholder="Buscar medida… (ej: 205 o R16)" />
+        <Button
+          variant="outline"
+          onClick={autoGenerar}
+          disabled={generando}
+        >
+          {generando ? '⏳ Generando…' : '🔄 Auto-generar desde catálogo'}
+        </Button>
         <Button onClick={() => setNuevo(true)}>+ Nueva medida</Button>
+      </div>
+
+      <div className={styles.infoBox}>
+        💡 <strong>Auto-generar</strong> toma todas las medidas únicas del catálogo de productos y calcula automáticamente dimensiones y peso estimado para las que aún no existen.
       </div>
 
       {isLoading ? <Spinner /> : medidas.length === 0 ? (
@@ -136,6 +211,10 @@ export default function DespachosMedidas() {
             ))}
           </div>
         </>
+      )}
+
+      {genResultado && (
+        <AutoGenerarResultado resultado={genResultado} onClose={() => setGenResultado(null)} />
       )}
 
       {(nuevo || editando) && (

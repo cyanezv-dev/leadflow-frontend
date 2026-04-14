@@ -257,6 +257,31 @@
 .medidaOptionMeta { font-size: 11px; color: var(--text3); white-space: nowrap; }
 .medidaEmpty { padding: 16px 12px; font-size: 13px; color: var(--text3); text-align: center; }
 
+/* ── Auto-generar resultado ── */
+.autoGenStats {
+  display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.autoGenStat {
+  flex: 1; min-width: 90px; background: var(--bg3); border-radius: 10px;
+  padding: 12px; text-align: center;
+}
+.autoGenVal { display: block; font-size: 28px; font-weight: 700; line-height: 1; }
+.autoGenLabel { font-size: 11px; color: var(--text3); margin-top: 4px; display: block; }
+.autoGenDetalle {
+  max-height: 300px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: 10px;
+  margin-bottom: 12px;
+}
+.autoGenRow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; font-size: 13px; gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.autoGenRow:last-child { border-bottom: none; }
+.autoGenCreada  { font-size: 12px; color: #059669; }
+.autoGenExiste  { font-size: 12px; color: var(--text3); }
+.autoGenInvalida { font-size: 12px; color: #d97706; }
+
 /* ── Info box ── */
 .infoBox {
   background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
