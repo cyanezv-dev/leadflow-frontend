@@ -19,6 +19,8 @@
 .tipoBadge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--accent-dim);color:var(--accent)}
 .metaChip{font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:2px 8px;border-radius:10px}
 .rowDesc{font-size:12px;color:var(--text3)}
+.comunasRow{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.comunaTagSm{font-size:10px;font-weight:600;padding:1px 7px;background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:10px;color:var(--accent)}
 .rowDias{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .diaTag{font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--bg4);color:var(--text4);border:1px solid var(--border)}
 .diaTagOn{background:var(--green-bg);color:var(--green);border-color:rgba(5,150,105,.25)}
@@ -45,5 +47,20 @@
 .diaBtnOn{background:var(--green-bg);border-color:rgba(5,150,105,.3);color:var(--green)}
 .modalFooter{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border);margin-top:8px}
 .activeToggle{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer}
+
+/* Mapa */
+.mapWrap{position:relative;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);background:var(--bg3)}
+.mapEl{height:260px;width:100%}
+.mapPlaceholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:12px;color:var(--text3);background:var(--bg3);pointer-events:none}
+
+/* Comunas multi-select */
+.comunasBox{display:flex;flex-direction:column;gap:8px}
+.comunasLabel{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+.comunasTags{display:flex;flex-wrap:wrap;gap:6px;min-height:32px;align-items:center}
+.comunasEmpty{font-size:12px;color:var(--text4);font-style:italic}
+.comunaTag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;background:var(--accent-dim);border:1px solid rgba(37,99,235,.2);border-radius:20px;font-size:12px;font-weight:600;color:var(--accent)}
+.comunaTagDel{background:none;border:none;cursor:pointer;font-size:14px;color:var(--accent);line-height:1;padding:0;margin-left:2px;opacity:.7;transition:opacity .15s}
+.comunaTagDel:hover{opacity:1}
+.comunasHint{font-size:11px;color:var(--text3)}
 
 @media(max-width:768px){.content{padding:14px 16px}.statsRow{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}

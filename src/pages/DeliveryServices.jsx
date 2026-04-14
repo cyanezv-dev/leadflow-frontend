@@ -1,10 +1,123 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Header from '@/components/layout/Header'
 import { Button, Card, Spinner, Empty, Toast, Modal, Input, Select } from '@/components/ui'
+import { ComunaInput } from '@/components/ui'
 import { fmt } from '@/utils/format'
 import api from '@/utils/api'
 import styles from './DeliveryServices.module.css'
+
+// ── Mapa de cobertura con Leaflet ────────────────────────────
+function CoverageMap({ lat, lng, radioKm }) {
+  const mapRef   = useRef(null)
+  const leafRef  = useRef(null)   // instancia del mapa
+  const circleRef = useRef(null)
+  const markerRef = useRef(null)
+
+  useEffect(() => {
+    let mounted = true
+    import('leaflet').then(L => {
+      if (!mounted || !mapRef.current) return
+      // Fix icono por defecto (problema conocido con Vite + Leaflet)
+      delete L.Icon.Default.prototype._getIconUrl
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      })
+
+      if (!leafRef.current) {
+        leafRef.current = L.map(mapRef.current, { zoomControl: true, scrollWheelZoom: false })
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap',
+          maxZoom: 18,
+        }).addTo(leafRef.current)
+      }
+
+      const map = leafRef.current
+      const hasCoords = lat && lng && !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))
+      const clat = hasCoords ? parseFloat(lat) : -33.45
+      const clng = hasCoords ? parseFloat(lng) : -70.65
+      const km   = parseFloat(radioKm) || 30
+
+      // Limpiar capas anteriores
+      if (markerRef.current) { map.removeLayer(markerRef.current); markerRef.current = null }
+      if (circleRef.current) { map.removeLayer(circleRef.current); circleRef.current = null }
+
+      if (hasCoords) {
+        markerRef.current = L.marker([clat, clng]).addTo(map)
+          .bindPopup('📍 Punto de origen').openPopup()
+        circleRef.current = L.circle([clat, clng], {
+          radius: km * 1000,
+          color: '#2563eb',
+          fillColor: '#2563eb',
+          fillOpacity: 0.12,
+          weight: 2,
+        }).addTo(map)
+        map.fitBounds(circleRef.current.getBounds(), { padding: [20, 20] })
+      } else {
+        map.setView([clat, clng], 10)
+      }
+    })
+    return () => { mounted = false }
+  }, [lat, lng, radioKm])
+
+  useEffect(() => {
+    return () => {
+      if (leafRef.current) { leafRef.current.remove(); leafRef.current = null }
+    }
+  }, [])
+
+  return (
+    <div className={styles.mapWrap}>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+      <div ref={mapRef} className={styles.mapEl} />
+      {(!lat || !lng) && (
+        <div className={styles.mapPlaceholder}>
+          Ingresa las coordenadas del punto de origen para ver la zona de cobertura
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Selector de comunas múltiples ────────────────────────────
+function ComunasMultiSelect({ value, onChange }) {
+  const comunas = value ? value.split('|').map(c => c.trim()).filter(Boolean) : []
+  const [input, setInput] = useState('')
+
+  const add = (nombre) => {
+    if (!nombre || comunas.includes(nombre)) return
+    onChange([...comunas, nombre].join('|'))
+    setInput('')
+  }
+  const remove = (c) => onChange(comunas.filter(x => x !== c).join('|'))
+
+  return (
+    <div className={styles.comunasBox}>
+      <div className={styles.comunasLabel}>Comunas que atiende</div>
+      <div className={styles.comunasTags}>
+        {comunas.length === 0 && (
+          <span className={styles.comunasEmpty}>Sin comunas específicas (cubre por radio)</span>
+        )}
+        {comunas.map(c => (
+          <span key={c} className={styles.comunaTag}>
+            {c}
+            <button type="button" className={styles.comunaTagDel} onClick={() => remove(c)}>×</button>
+          </span>
+        ))}
+      </div>
+      <ComunaInput
+        value={input}
+        placeholder="Buscar y agregar comuna..."
+        onChange={(nombre) => { add(nombre); setInput('') }}
+      />
+      <div className={styles.comunasHint}>
+        Si defines comunas, el servicio solo aparece en esas comunas además del radio de cobertura.
+      </div>
+    </div>
+  )
+}
 
 const DIAS_SEMANA = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo']
 const TIPOS = [
@@ -85,18 +198,28 @@ function ServiceModal({ svc, onClose, onSaved }) {
         </div>
       </div>
 
-      {/* Ubicación base */}
+      {/* Ubicación base + Mapa */}
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>📍 Punto de origen (bodega / base)</div>
+        <div className={styles.sectionTitle}>📍 Punto de origen y zona de cobertura</div>
         <div className={styles.grid2}>
           <Input label="Latitud" type="number" placeholder="-33.4372" step="any"
             value={form.lat_base} onChange={e => set('lat_base', e.target.value)} />
           <Input label="Longitud" type="number" placeholder="-70.6506" step="any"
             value={form.lng_base} onChange={e => set('lng_base', e.target.value)} />
         </div>
-        <div style={{ marginTop: 8, fontSize: 11, color: 'var(--text3)' }}>
-          Las coordenadas definen el punto desde donde se calcula el radio de cobertura. Puedes obtenerlas desde Google Maps (clic derecho → ¿Qué hay aquí?).
+        <div style={{ marginTop: 4, marginBottom: 10, fontSize: 11, color: 'var(--text3)' }}>
+          Obtén las coordenadas desde Google Maps: clic derecho sobre el punto → "¿Qué hay aquí?".
         </div>
+        <CoverageMap lat={form.lat_base} lng={form.lng_base} radioKm={form.radio_km} />
+      </div>
+
+      {/* Comunas específicas */}
+      <div className={styles.section}>
+        <div className={styles.sectionTitle}>🗺️ Comunas que atiende</div>
+        <ComunasMultiSelect
+          value={form.comunas}
+          onChange={val => set('comunas', val)}
+        />
       </div>
 
       {/* Disponibilidad */}
@@ -241,6 +364,13 @@ export default function DeliveryServices() {
                     </div>
                     {svc.descripcion && (
                       <div className={styles.rowDesc}>{svc.descripcion}</div>
+                    )}
+                    {svc.comunas && (
+                      <div className={styles.comunasRow}>
+                        {svc.comunas.split('|').filter(Boolean).map(c => (
+                          <span key={c} className={styles.comunaTagSm}>{c}</span>
+                        ))}
+                      </div>
                     )}
                     <div className={styles.rowDias}>
                       {DIAS_SEMANA.map(dia => {
