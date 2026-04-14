@@ -210,10 +210,16 @@ export default function DespachosMedidas() {
         <>
           <div className={styles.medidasHeader}>
             <span>Medida</span><span>Cat.</span><span>Ancho</span><span>Aro</span>
-            <span>Diam. ext.</span><span>Caja</span><span>Peso</span><span></span>
+            <span>Diam. ext.</span><span>Caja</span>
+            <span>Peso real</span><span title="Volumen cm³ ÷ 4000 — estándar couriers Chile">Peso vol. ÷4000</span>
+            <span></span>
           </div>
           <div className={styles.medidasList}>
-            {medidas.map(m => (
+            {medidas.map(m => {
+              const pesoVol = parseFloat((m.volumen_cm3 / 4000).toFixed(2))
+              const cobrable = Math.max(Number(m.peso_real_kg), pesoVol)
+              const volEsMayor = pesoVol > Number(m.peso_real_kg)
+              return (
               <div key={m.medida} className={styles.medidaRow}>
                 <strong className={styles.medidaCode}>{m.medida}</strong>
                 <span className={`${styles.catBadge} ${m.categoria === 'camioneta' ? styles.catCamioneta : ''}`}>
@@ -225,10 +231,15 @@ export default function DespachosMedidas() {
                 <span className={styles.medidaCaja}>
                   {m.caja_largo_cm}×{m.caja_ancho_cm}×{m.caja_alto_cm} cm
                 </span>
-                <span><strong>{m.peso_real_kg} kg</strong></span>
+                <span className={!volEsMayor ? styles.pesoDestacado : ''}><strong>{m.peso_real_kg} kg</strong></span>
+                <span className={volEsMayor ? styles.pesoDestacado : ''}>
+                  <strong>{pesoVol} kg</strong>
+                  {volEsMayor && <span className={styles.pesoCobrableTag}>cobrable</span>}
+                </span>
                 <Button size="sm" variant="ghost" onClick={() => setEditando(m)}>✏️</Button>
               </div>
-            ))}
+            )})}
+
           </div>
         </>
       )}

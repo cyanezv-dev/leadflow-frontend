@@ -163,7 +163,7 @@
 
 /* ── Medidas ── */
 .medidasHeader {
-  display: grid; grid-template-columns: 100px 40px 80px 60px 90px 1fr 70px 40px;
+  display: grid; grid-template-columns: 100px 40px 80px 60px 90px 1fr 90px 110px 40px;
   gap: 8px; padding: 8px 12px;
   font-size: 11px; font-weight: 700; color: var(--text3);
   text-transform: uppercase; letter-spacing: .04em;
@@ -171,7 +171,7 @@
 }
 .medidasList { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
 .medidaRow {
-  display: grid; grid-template-columns: 100px 40px 80px 60px 90px 1fr 70px 40px;
+  display: grid; grid-template-columns: 100px 40px 80px 60px 90px 1fr 90px 110px 40px;
   gap: 8px; align-items: center; padding: 10px 12px;
   background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
   font-size: 13px; color: var(--text2);
@@ -180,6 +180,14 @@
 .medidaCaja { font-size: 11px; color: var(--text3); }
 .catBadge { font-size: 16px; }
 .catCamioneta {}
+
+.pesoDestacado { color: var(--primary, #6366f1); }
+.pesoCobrableTag {
+  display: inline-block; margin-left: 4px;
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  background: #fef3c7; color: #92400e;
+  border-radius: 4px; padding: 1px 4px; letter-spacing: .04em;
+}
 
 /* ── Couriers config ── */
 .couriersList { display: flex; flex-direction: column; gap: 10px; }
