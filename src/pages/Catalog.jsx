@@ -211,8 +211,22 @@ function ProductModal({ product, fields, brandOptions, onClose, onSaved }) {
               </option>
             ))}
           </Select>
-          <Input label="Precio normal" type="number" placeholder="99990" value={form.price_normal} onChange={e=>set('price_normal',e.target.value)}/>
-          <Input label="Precio oferta" type="number" placeholder="Opcional" value={form.price_offer} onChange={e=>set('price_offer',e.target.value)}/>
+          <div>
+            <Input label="Precio normal (neto s/IVA)" type="number" placeholder="99990" value={form.price_normal} onChange={e=>set('price_normal',e.target.value)}/>
+            {form.price_normal > 0 && (
+              <div style={{fontSize:11,color:'var(--text3)',marginTop:3}}>
+                c/IVA: <strong>{fmt.currency(withIva(Number(form.price_normal)))}</strong>
+              </div>
+            )}
+          </div>
+          <div>
+            <Input label="Precio oferta (neto s/IVA)" type="number" placeholder="Opcional" value={form.price_offer} onChange={e=>set('price_offer',e.target.value)}/>
+            {form.price_offer > 0 && (
+              <div style={{fontSize:11,color:'var(--primary)',marginTop:3}}>
+                c/IVA: <strong>{fmt.currency(withIva(Number(form.price_offer)))}</strong>
+              </div>
+            )}
+          </div>
           <Input label="Stock" type="number" value={form.stock} onChange={e=>set('stock',e.target.value)}/>
           <Select label="Unidad" value={form.unit} onChange={e => set('unit', e.target.value)}>
             {unitOpts.map((u) => (
