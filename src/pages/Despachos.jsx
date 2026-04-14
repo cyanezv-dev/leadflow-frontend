@@ -29,7 +29,7 @@ function EstadoBadge({ estado }) {
 function TrackingModal({ despacho, onClose }) {
   const { data, isLoading } = useQuery({
     queryKey: ['despacho-tracking', despacho.id],
-    queryFn: () => api.get(`/despachos/${despacho.id}/tracking`).then(r => r.data),
+    queryFn: () => api.get(`/despachos/${despacho.id}/tracking`),
   })
 
   const eventos = data?.data?.eventos || []
@@ -130,7 +130,7 @@ export default function Despachos() {
     queryKey: ['despachos', filtroEstado],
     queryFn: () => {
       const q = filtroEstado ? `?estado=${filtroEstado}` : ''
-      return api.get(`/despachos${q}`).then(r => r.data)
+      return api.get(`/despachos${q}`)
     },
   })
 

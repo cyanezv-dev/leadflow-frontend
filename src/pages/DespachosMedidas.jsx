@@ -172,7 +172,7 @@ export default function DespachosMedidas() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['neumatico-dimensiones'],
-    queryFn: () => api.get('/despachos/neumaticos/dimensiones?activo=true').then(r => r.data),
+    queryFn: () => api.get('/despachos/neumaticos/dimensiones?activo=true'),
   })
   const medidas = (data?.data || []).filter(m =>
     !filtro || m.medida.toLowerCase().includes(filtro.toLowerCase())

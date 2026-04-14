@@ -184,7 +184,7 @@ export default function DespachosCotizador() {
 
   const { data: medidasData } = useQuery({
     queryKey: ['neumatico-dimensiones'],
-    queryFn: () => api.get('/despachos/neumaticos/dimensiones').then(r => r.data),
+    queryFn: () => api.get('/despachos/neumaticos/dimensiones'),
     staleTime: 5 * 60 * 1000,
   })
   const medidas = medidasData?.data || []

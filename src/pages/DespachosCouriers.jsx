@@ -70,7 +70,7 @@ export default function DespachosCouriers() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['couriers-config'],
-    queryFn: () => api.get('/despachos/couriers').then(r => r.data),
+    queryFn: () => api.get('/despachos/couriers'),
   })
   const couriers = data?.data || []
 
